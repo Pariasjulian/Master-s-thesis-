@@ -1,0 +1,15 @@
+# Archivos generados por LaTeX
+*.aux
+*.bbl
+*.blg
+*.lof
+*.log
+*.lot
+*.out
+*.synctex.gz
+*.toc
+*.fls
+*.fdb_latexmk
+
+# Archivo PDF generado (opcional, quita esta línea si quieres subir el PDF)
+*.pdf

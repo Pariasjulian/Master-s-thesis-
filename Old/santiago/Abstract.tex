@@ -1,0 +1,36 @@
+\newpage
+\chapter*{\sffamily Resumen}
+\addcontentsline{toc}{chapter}{Resumen}%
+\par En la busqueda de sistemas de respuesta a preguntas, la interpretabilidad se ha convertido en un desafio crucial, especialmente en arquitecturas basadas en transformers para la tarea de EQA; pues aunque estas arquitecturas demuestran un rendimiento excepcional en la respuesta a preguntas a partir de un contexto dado, su opacidad interna limita nuestra comprensión sobre el proceso de toma de decisiones, afectando la confianza en los resultados y obstaculizando la optimización de modelos.
+
+Esta investigación aborda la necesidad de interpretabilidad en arquitecturas transformers para la tarea de  EQA, centrándose en las técnicas de interpretabilidad RawAtt \cite{abnar2020quantifying}, AttCat \cite{qiang2022attcat} y Rollout \cite{abnar2020quantifying}. Evaluamos el rendimiento de estas técnicas en las arquitecturas BERT \cite{devlin2018bert}, Roberta \cite{liu2019roberta} y Distilbert \cite{sanh2019distilbert} sobre la base de datos VisualMRC \cite{tanaka2021visualmrc}, categorizandola por clase semántica; para de esta manera darnos cuenta en cada una de las clases semánticas cual es la técnica de interpretabilidad y la arquitectura que mejor rendimiento proporciona en cuanto a interpretabilidad.
+
+
+Nuestra propuesta consiste en un modelo hibrido que alterna entre Distilbert \cite{sanh2019distilbert} y Roberta \cite{liu2019roberta} según la clase semántica y que utiliza RawAtt \cite{abnar2020quantifying} como técnica de interpretabilidad; ya que es la técnica de interpretabilidad que mejor rendimiento proporcionó sobre todas las clases semánticas en todas las arquitecturas probadas. Este modelo hibrido muestra mejoras sustanciales con respecto a los modelos individuales en la interpretabilidad sobre la tarea de EQA sobre la base de datos VisualMRC \cite{tanaka2021visualmrc}. Además, hemos demostrado que nuestro modelo es más robusto a la variabilidad de los tipos de texto, con respecto a los modelos individuales probados.
+
+
+En resumen, este trabajo contribuye a la comprensión de como funcionan internamente las arquitecturas transformers en la tarea de EQA, basandose en la técnica de interpretabilidad RawAtt \cite{abnar2020quantifying}. Nuestro modelo híbrido representa un avance significativo en interpretabilidad al ofrecer una interpretación más clara y consistente de los resultados, allanando el camino para futuras investigaciones en este campo.
+
+\newpage 
+\chapter*{\sffamily Abstract}
+\addcontentsline{toc}{chapter}{Abstract}%
+\par In the search for question answering systems, interpretability has become a crucial challenge, especially in transformer-based architectures for the task of extractive question answering; Although these architectures demonstrate exceptional performance in answering questions from a given context, their internal opacity limits our understanding of the decision-making process, affecting confidence in the results and hindering model optimization.
+
+This research addresses the need for interpretability in transformer architectures for the EQA task, focusing on the RawAtt \cite{abnar2020quantifying}, AttCat \cite{qiang2022attcat} and Rollout \cite{abnar2020quantifying} interpretability techniques. We evaluate the performance of these techniques on the BERT \cite{devlin2018bert}, Roberta \cite{liu2019roberta} and Distilbert \cite{sanh2019distilbert} architectures on the VisualMRC database \cite{tanaka2021visualmrc}, categorizing it by semantic class; in this way we realize in each of the semantic classes what is the interpretability technique and the architecture that provides the best performance in terms of interpretability.
+
+Our proposal consists of a hybrid model that alternates between Distilbert \cite{sanh2019distilbert} and Roberta \cite{liu2019roberta} depending on the semantic class and that uses RawAtt \cite{abnar2020quantifying} as an interpretability technique; since it is the interpretability technique that provided the best performance on all semantic classes in all tested architectures. This hybrid model shows substantial improvements with respect to the individual models in interpretability on the EQA task on the VisualMRC database \cite{tanaka2021visualmrc}. Furthermore, we have shown that our model is more robust to the variability of text types, with respect to the individual models tested.
+
+In summary, this work contributes to the understanding of how transformer architectures work internally in the EQA task, based on the RawAtt \cite{abnar2020quantifying} interpretability technique. Our hybrid model represents a significant advance in interpretability by offering a clearer and more consistent interpretation of the results, paving the way for future research in this field.
+
+
+
+\textbf{Keywords:} Natural Languaje Processing, Question Answering, Visual Question Answering, Machine Reading Comprehension, Visual Machine Reading Comprehension, Transformer Architecture, Interpretability Technique.
+
+
+%\newpage 
+%\chapter*{\sffamily Zusammenfassung}
+%\addcontentsline{toc}{chapter}{Zusammenfassung}%
+%\par Zusammenfassung texte.
+%\par 
+%\\[2cm]
+%\textbf{Schlüsselwörter:} \schlusselworter
