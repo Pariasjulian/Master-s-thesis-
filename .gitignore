@@ -16,5 +16,3 @@
 *.ist
 *.nlo
 *.ntn
-# Archivo PDF generado (opcional, quita esta línea si quieres subir el PDF)
-*.pdf
