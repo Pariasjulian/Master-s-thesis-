@@ -1,0 +1,20 @@
+\chapter{Firmware and Synchronization Strategy}
+\label{chap:firmware_synchronization}
+
+\section{TM4C1294 Firmware Design}
+\subsection{Interrupt Service Routines (ISR)}
+Using the ADS1299 DRDY (Data Ready) pin to trigger data retrieval.
+
+\subsection{The "Timestamping" Engine}
+This is the core contribution.
+The Tablet sends a Hex Code (e.g., 0x0A for "Target Appears").
+The TM4C receives this via USB/Serial.
+The firmware must instantly inject this code into the current EEG sample packet before sending it to the RPi.
+
+\section{Serious Game Integration}
+Description of the library used on the Tablet side to send Hex codes.
+Protocol definition (Start byte, Event Code, End byte).
+
+\section{Raspberry Pi CM4 Software}
+Linux kernel configuration for real-time performance (optional: PREEMPT\_RT).
+Data formatting (e.g., converting raw bytes to EDF+ or XDF formats).
