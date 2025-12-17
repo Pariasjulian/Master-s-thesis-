@@ -1,0 +1,84 @@
+\chapter{Firmware and Synchronization Strategy}
+\label{ch:firmware_sync}
+
+This chapter details the software logic embedded within the MONEEE hardware and the serious game interface. It describes the core contribution of this work: a hardware-level event injection mechanism that eliminates operating system latency by synchronizing physiological data with game events at the Microcontroller (MCU) level.
+
+\section{TM4C1294 Firmware Design}
+\label{sec:tm4c_firmware}
+
+The firmware running on the Texas Instruments TM4C1294 is designed as a "Bare Metal" application (or utilizing a minimal RTOS scheduler) to guarantee deterministic execution. The architecture is event-driven, prioritizing data acquisition over all other tasks.
+
+\subsection{Interrupt Service Routines (ISR)}
+The synchronization engine relies on the precise handling of the ADS1299 \texttt{DRDY} (Data Ready) signal. The ADS1299 pulls the \texttt{DRDY} pin low at the programmed sample rate (e.g., 250 Hz, every 4 ms).
+
+\begin{figure}[h]
+    \centering
+    % \includegraphics[width=0.8\textwidth]{isr_flowchart.png}
+    \caption{Flowchart of the Data Ready (DRDY) Interrupt Service Routine.}
+    \label{fig:isr_flowchart}
+\end{figure}
+
+The ISR sequence is critical for maintaining phase coherency:
+\begin{enumerate}
+    \item \textbf{Trigger:} The GPIO interrupt triggers on the falling edge of \texttt{DRDY}.
+    \item \textbf{Capture:} The MCU asserts the SPI Chip Select (\texttt{CS}) and initiates a Direct Memory Access (DMA) transfer to read 24 bytes of data (8 channels $\times$ 24 bits + status bits).
+    \item \textbf{Buffering:} The raw data is moved to a circular buffer. Crucially, the ISR checks a global \texttt{Event\_Flag} variable before closing the packet.
+\end{enumerate}
+
+\subsection{The "Timestamping" Engine}
+To solve the synchronization problem, the system does not rely on the PC or RPi clock to timestamp events. Instead, it uses a \textbf{Hardware Injection Strategy}.
+
+\begin{itemize}
+    \item \textbf{Mechanism:} When the Tablet (Game) generates a stimulus, it sends a specific 8-bit Hex Code (e.g., \texttt{0x0A} for "Target Appears") via the USB-C interface to the TM4C.
+    \item \textbf{Injection:} This USB reception triggers a high-priority interrupt on the TM4C. The received byte is immediately stored in a volatile \texttt{Current\_Event} register.
+    \item \textbf{Synchronization:} During the \textit{next} immediate ADS1299 sample cycle (within $<4$ ms), the ISR reads this \texttt{Current\_Event} register. It appends the Hex Code directly to the tail of the current EEG data packet.
+    \item \textbf{Result:} The event marker and the EEG sample are physically bound together in the same data frame before they ever reach the non-deterministic Linux environment. This ensures that the relative jitter between the marker and the signal is effectively zero (bounded only by the sampling period).
+\end{itemize}
+
+\section{Serious Game Integration}
+\label{sec:game_integration}
+
+For the serious game (developed in Unity or Godot), a custom communication library was developed to interface with the MONEEE hardware.
+
+\subsection{Communication Library}
+The library acts as a wrapper around the tablet's serial API. It exposes simple functions such as \texttt{SendMarker(int code)} that the game logic calls at the exact frame a visual stimulus is rendered.
+
+\subsection{Protocol Definition}
+To ensure command integrity over the USB link, a lightweight binary protocol is defined. The tablet sends events using the following 3-byte structure:
+
+\begin{table}[h]
+    \centering
+    \caption{Serial Event Protocol Structure}
+    \label{tab:protocol}
+    \begin{tabular}{|c|c|c|}
+        \hline
+        \textbf{Byte 0} & \textbf{Byte 1} & \textbf{Byte 2} \\
+        \hline
+        Start Marker & Event Code & End Marker \\
+        \hline
+        \texttt{0xFF} & \texttt{0x00 - 0xFE} & \texttt{0xAA} \\
+        \hline
+    \end{tabular}
+\end{table}
+
+\begin{itemize}
+    \item \textbf{Start Byte (\texttt{0xFF}):} Signals the beginning of a command.
+    \item \textbf{Event Code:} The specific identifier for the game event (e.g., \texttt{0x01} = Game Start, \texttt{0x02} = Game Over, \texttt{0x10} = Standard Stimulus, \texttt{0x20} = Deviant Stimulus/Oddball).
+    \item \textbf{End Byte (\texttt{0xAA}):} Used to validate the packet. If the TM4C receives \texttt{0xFF} followed by a code but no \texttt{0xAA}, the packet is discarded as noise.
+\end{itemize}
+
+\section{Raspberry Pi CM4 Software}
+\label{sec:rpi_software}
+
+The Raspberry Pi Compute Module 4 acts as the data aggregator and gateway. While the hard synchronization is handled by the TM4C, the RPi must process data efficiently to prevent buffer overflows.
+
+\subsection{Linux Kernel Configuration}
+To minimize process switching latency, the Linux kernel on the CM4 is optimized:
+\begin{itemize}
+    \item \textbf{PREEMPT\_RT Patch:} The kernel is patched with \texttt{PREEMPT\_RT}, turning Linux into a real-time operating system. This allows high-priority driver threads (like the UART receiver) to preempt standard processes, ensuring that the data stream from the TM4C is read smoothly from the serial buffer.
+    \item \textbf{CPU Isolation:} Specific CPU cores are isolated (using \texttt{isolcpus} boot parameters) to dedicate them solely to data ingestion, keeping them free from GUI or Wi-Fi interrupt overhead.
+\end{itemize}
+
+\subsection{Data Formatting (XDF)}
+The RPi software (written in Python/C++) ingests the raw binary packets from the TM4C. It parses the injected event markers and reformats the stream into the \textbf{Extensible Data Format (XDF)}.
+XDF is the native format for the Lab Streaming Layer (LSL). It supports multi-modal data containers, allowing the EEG samples and the discrete event markers to be stored in parallel streams with unified timestamps, ready for post-processing in MATLAB (EEGLAB) or Python (MNE).
