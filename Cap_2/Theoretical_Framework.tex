@@ -1,100 +1,64 @@
 \chapter{Theoretical Framework}
-\label{chap:theoretical_framework}
+\label{ch:theoretical_framework}
 
+The development of the MONEEE system is grounded in the convergence of neurophysiological principles, precision electronic engineering, and computer science. This section systematizes the critical concepts required for the device's implementation, addressing the stochastic nature of biological signals, the low-noise acquisition architecture, and the challenges inherent to temporal synchronization in heterogeneous digital systems.
 
-This chapter establishes the scientific and engineering foundations required to develop the MONEEE system. It addresses the physiological nature of the signals being measured, the electronic principles of high-precision acquisition, and the computational challenges of synchronizing disparate digital systems.
-
-\section{Neurophysiology \& Event-Related Potentials (ERPs)}
+\section{Neurophysiology and Event-Related Potentials (ERPs)}
 \label{sec:neurophysiology}
 
-Electroencephalography (EEG) measures the electrical activity of the brain via electrodes placed on the scalp. While continuous EEG provides information about the state of the brain (e.g., sleep stages, seizure activity), cognitive neuroscience often focuses on the brain's response to specific sensory, cognitive, or motor events. These time-locked responses are known as Event-Related Potentials (ERPs).
+Electroencephalography (EEG) constitutes a non-invasive technique for recording cerebral bioelectric activity via transducers arranged on the scalp. While continuous EEG analysis allows for the monitoring of basal brain states—such as wakefulness, sleep, or convulsive pathologies—cognitive neuroscience research requires isolating specific neuronal responses associated with sensory, motor, or cognitive stimuli. These voltage fluctuations, known as Event-Related Potentials (ERPs), represent the synchronized activity of pyramidal neuronal populations in response to information processing.
 
 \begin{figure}[ht]
     \centering
     \includegraphics[width=0.8\textwidth]{Cap_2/Figure/p300_waveform.png}
-    \caption{Typical waveform of an Event-Related Potential showing P300 and N200 components.}
+    \caption{Characteristic morphology of an Event-Related Potential (ERP), highlighting exogenous and endogenous components such as the N200 and P300.}
     \label{fig:p300_waveform}
 \end{figure}
 
-\subsection{The P300 and N200 Components}
-ERPs are small voltage fluctuations (typically $1\mu V$ to $20\mu V$) embedded within the larger background EEG noise ($50\mu V$ to $100\mu V$). Two components are particularly relevant for neurocognitive assessment and serious games:
+Within the complex morphology of ERPs, two endogenous components are of particular interest for neurocognitive evaluation and the implementation of serious games in the context of this project. The first is the N200 (or N2) component, a negative deflection that reaches its maximum amplitude between 200 and 350 ms post-stimulus. This component is functionally linked to executive control, specifically in mismatch detection processes and the inhibition of motor responses. The second component, the P300 (or P3b), manifests as a prominent positive deflection with a latency of 300 to 600 ms. Its amplitude is modulated by the allocation of attentional resources and the updating of working memory, being particularly sensitive to stimulus improbability (the \textit{oddball} paradigm). Due to these characteristics, the P300 is consolidated as a robust biomarker for quantifying cognitive load and attentional deficits.
 
-\begin{itemize}
-    \item \textbf{The N200 (N2):} A negative deflection peaking approximately 200--350 ms after stimulus onset. It is primarily associated with executive control functions, specifically mismatch detection (when a stimulus deviates from expectation) and response inhibition.
-    \item \textbf{The P300 (P3b):} A large positive deflection peaking 300--600 ms post-stimulus. The P300 reflects processes related to context updating and the allocation of attentional resources. Its amplitude is often proportional to the improbability of the target stimulus (the 'oddball' effect), making it a robust metric for assessing attention and cognitive workload in ADHD patients.
-\end{itemize}
+The detection of these components presents a significant challenge in signal processing due to their low signal-to-noise ratio (SNR). ERPs possess typical amplitudes in the range of $1\mu V$ to $20\mu V$, frequently remaining masked by background EEG activity, the magnitude of which oscillates between $50\mu V$ and $100\mu V$. To extract the signal of interest, the technique of coherent signal averaging is employed. Assuming that background noise is a stochastic process with zero mean and is uncorrelated with the stimulus, by averaging $N$ trials, the noise amplitude decreases in proportion to $1/\sqrt{N}$, while the ERP signal remains constant.
 
-\subsection{The Necessity of Millisecond-Level Precision}
-Because ERPs are much smaller than background brain activity, they cannot be reliably identified in a single trial. Instead, researchers use \textit{Signal Averaging}. By averaging $N$ time-locked trials, the background noise (assumed to be random with a mean of zero) decreases by a factor of $\sqrt{N}$, while the time-locked ERP signal remains constant.
+However, the validity of this technique depends strictly on temporal stability. Variability in the synchronization marker's latency, a phenomenon termed \textit{jitter}, introduces systematic errors in the resulting average. Mathematically, if the trigger latency follows a normal distribution with standard deviation $\sigma_t$, the averaging process acts as a low-pass filter on the original waveform, attenuating high-frequency components and distorting peak amplitude. A jitter greater than 10 ms ($\sigma_t > 10$ ms) is sufficient to degrade the morphology of the N200 component, compromising the diagnostic utility of the data. Consequently, the MONEEE system must guarantee strict real-time (\textit{hard real-time}) synchronization to preserve the spectral and temporal integrity of the biomarkers.
 
-However, this technique relies on the assumption of temporal stability. If the synchronization marker (the 'trigger' indicating when the game event occurred) has variable latency—known as \textit{jitter}—the averaging process will 'smear' the ERP peaks. Mathematically, if the latency follows a Gaussian distribution with standard deviation $\sigma_t$, the averaged signal is effectively low-pass filtered. A jitter of just $\sigma_t > 10$ ms can significantly attenuate high-frequency components of the N200, rendering the diagnostic data invalid. Therefore, the MONEEE system requires hard-real-time synchronization capabilities.
-
-\section{Signal Acquisition Hardware}
+\section{Hardware Architecture for Signal Acquisition}
 \label{sec:hardware}
 
-The fidelity of the EEG data depends heavily on the analog-front-end architecture. The MONEEE system utilizes the Texas Instruments ADS1299, a specialized Analog-to-Digital Converter (ADC) for biopotential measurements.
+The fidelity in the digitization of biopotentials is determined by the topology of the Analog Front-End (AFE). The proposed system integrates the Texas Instruments ADS1299 integrated circuit, an analog-to-digital converter (ADC) designed specifically for biomedical instrumentation, which implements a Delta-Sigma ($\Delta\Sigma$) modulation architecture.
 
-\subsection{Delta-Sigma (\texorpdfstring{$\Delta\Sigma$}{Delta-Sigma}) Analog-to-Digital Converters}
-Unlike Successive Approximation Register (SAR) ADCs often found in general-purpose microcontrollers, the ADS1299 is a Delta-Sigma modulator. This architecture is chosen for its superior noise performance and dynamic range.
-
-\begin{enumerate}
-    \item \textbf{Oversampling:} The ADC samples the input at a frequency ($f_{mod}$) much higher than the Nyquist rate. This spreads the quantization noise over a wider bandwidth.
-    \item \textbf{Noise Shaping:} The modulator pushes the quantization noise into higher frequencies, away from the biological signal band (0--100 Hz).
-    \item \textbf{Digital Filtering:} A subsequent digital decimation filter removes the high-frequency noise and reduces the data rate to the user-selected output (e.g., 250 SPS or 500 SPS).
-\end{enumerate}
+Unlike the Successive Approximation Register (SAR) converters common in general-purpose microcontrollers, the $\Delta\Sigma$ architecture offers superior advantages in terms of dynamic range and noise rejection through two main mechanisms: oversampling and noise shaping. The device samples the input signal at a modulation frequency ($f_{mod}$) significantly higher than the Nyquist rate, distributing quantization noise power over a wider spectrum. Subsequently, the modulator shifts this noise toward high frequencies, outside the biological band of interest (0--100 Hz), allowing a digital decimation filter to eliminate it effectively while reducing the data rate to the output frequency configured by the user.
 
 \begin{figure}[ht]
     \centering
     \includegraphics[width=0.8\textwidth]{Cap_2/Figure/delta_sigma_block.png}
-    \caption{Simplified block diagram of a Delta-Sigma ADC architecture.}
+    \caption{Simplified functional scheme of the modulation and filtering stage in a Delta-Sigma architecture ADC.}
     \label{fig:delta_sigma}
 \end{figure}
 
-\subsubsection{Simultaneous Sampling}
-A critical feature of the ADS1299 is its ability to sample all 8 channels simultaneously. In multiplexed architectures, a single ADC switches between channels sequentially, introducing a phase delay between electrodes ($t_{skew}$). For EEG connectivity analysis (coherence), $t_{skew}$ must be zero. The ADS1299 achieves this by dedicating a separate $\Delta\Sigma$ modulator to every channel.
+A critical aspect for functional connectivity and EEG coherence analysis is sampling simultaneity. In traditional multiplexed systems, a single ADC core switches sequentially between channels, introducing a systematic phase delay ($t_{skew}$) between electrodes. The ADS1299 mitigates this problem by incorporating independent $\Delta\Sigma$ modulators for each of its 8 channels, guaranteeing a virtually null $t_{skew}$ and preserving the real phase relationship between different cortical regions.
 
-\subsection{Heterogeneous Embedded Systems: MCU vs. MPU}
-To balance signal integrity with data throughput, modern acquisition systems often employ a heterogeneous architecture, combining a Microcontroller Unit (MCU) and a Microprocessor Unit (MPU).
-
-\begin{itemize}
-    \item \textbf{The MCU (e.g., TM4C1294):} Acts as the hard real-time controller. It operates "bare metal" or with a Real-Time Operating System (RTOS). Its primary role is \textbf{determinism}. When the ADC indicates data is ready (via a \texttt{DRDY} hardware interrupt), the MCU must capture it within microseconds to prevent FIFO overflows. It is responsible for timestamping the incoming data precisely when it arrives.
-    \item \textbf{The MPU (e.g., Raspberry Pi Compute Module):} Runs a rich Operating System like Linux. It handles high-throughput tasks such as network stacks (TCP/IP), file storage, and complex drivers. However, standard Linux is non-deterministic; the kernel scheduler may preempt a task for 10--20 ms to handle background processes.
-    \item \textbf{The Synergy:} In the MONEEE architecture, the MCU guarantees the timing of the acquisition, effectively isolating the sensitive bio-signals from the non-deterministic jitter of the Linux-based MPU.
-\end{itemize}
+To manage data flow without sacrificing temporal determinism, the MONEEE system design adopts a heterogeneous computing architecture that decouples acquisition from high-level processing. This structure is composed of a Microcontroller Unit (MCU), such as the TM4C1294, and a Microprocessor Unit (MPU), based on embedded Linux. The MCU operates under real-time constraints (either on \textit{bare-metal} or with a lightweight RTOS), reacting to ADC hardware interrupts (\texttt{DRDY}) on microsecond scales to capture and timestamp samples, preventing FIFO buffer overflows. Meanwhile, the MPU manages computationally intensive and non-deterministic tasks, such as the TCP/IP protocol stack and file system storage. This division of responsibilities isolates bio-signal acquisition from the variable latencies introduced by the Linux kernel scheduler, ensuring data temporal integrity.
 
 \section{Digital Synchronization Protocols}
 \label{sec:sync_protocols}
 
-Synchronizing the EEG data (recorded by hardware) with the game events (generated by software) is the principal challenge of this thesis. Several methods exist, each with trade-offs regarding latency and intrusiveness.
+Precise synchronization between the physiological recording and events generated by the stimulation software (video game) constitutes the central technical challenge of this research. The selection of the synchronization method implies a trade-off between temporal precision, implementation complexity, and intrusion into the user experience. Table \ref{tab:sync_methods} summarizes the characteristics of the predominant approaches.
 
 \begin{table}[ht]
     \centering
-    \caption{Comparison of Synchronization Methods}
+    \caption{Comparative analysis of synchronization methods for BCI systems.}
     \label{tab:sync_methods}
     \begin{tabular}{p{3cm} p{5cm} p{2.5cm} p{3.5cm}}
         \toprule
         \textbf{Method} & \textbf{Mechanism} & \textbf{Precision} & \textbf{Implementation} \\
         \midrule
-        Optical (Photodiode) & Hardware sensor detects pixel changes on screen. & High ($<1$ ms) & High (External hardware required). \\
-        Network (LSL) & Time-sync via NTP-like protocols over LAN. & Medium ($<5$ ms) & Low (Software only). \\
-        Hardware Trigger (TTL) & Parallel port or USB-to-TTL directly to ADC. & Very High ($<1$ ms) & Medium (Legacy ports or dongles). \\
+        Optical (Photodiode) & Physical detection of screen luminance changes by an external sensor. & High ($<1$ ms) & High (Additional hardware required). \\
+        Network (LSL) & Synchronization via local network protocol and software jitter correction. & Medium ($<5$ ms) & Low (Software only). \\
+        Hardware Trigger (TTL) & Direct electrical signal from Parallel/USB port to the ADC. & Very High ($<1$ ms) & Medium (Requires specific interfaces). \\
         \bottomrule
     \end{tabular}
 \end{table}
 
-\subsection{Optical vs. Network Synchronization}
-\textbf{Optical (Ground Truth):} Placing a photodiode on the monitor to detect the exact moment a visual stimulus appears. This bypasses all operating system and GPU rendering delays. It is often used as the "gold standard" to validate other methods but is impractical for widespread clinical deployment due to the hardware setup required.
+There are contrasting approaches to addressing this problem. Optical synchronization, based on photodiodes attached to the monitor, is considered the ``gold standard'' for validation, as it detects the physical change of pixels, bypassing software, operating system, and GPU rendering latencies. However, its requirement for external hardware limits its viability in massive clinical deployments. As a scalable alternative, the \textit{Lab Streaming Layer} (LSL) protocol offers a middleware solution that unifies disparate data streams by assigning timestamps referenced to a common clock and drift correction algorithms. While LSL simplifies integration, its final accuracy remains dependent on local network stability and the game engine's ability to report the event time accurately.
 
-\textbf{Lab Streaming Layer (LSL):} A network-based middleware that handles time-series data. It synchronizes streams by mapping local machine timestamps to a common clock, performing jitter correction. While effective, it relies on the quality of the local network and the accuracy of the software timestamps generated by the game engine.
-
-\subsection{USB Latency Characteristics}
-The MONEEE system utilizes USB for communication between the MCU and the MPU/Host. Understanding USB latency is vital for "soft-triggers" (commands sent from the PC to the amplifier).
-
-\begin{itemize}
-    \item \textbf{Polling Intervals:} USB is a host-controlled bus. The host polls the device for data.
-    \begin{itemize}
-        \item \textit{Full Speed (USB 2.0):} Frame time is 1 ms. Data is transferred only once per frame.
-        \item \textit{High Speed:} Microframe time is $125 \mu s$.
-    \end{itemize}
-    \item \textbf{CDC Class Overhead:} The Communication Device Class (CDC) emulates a serial port. While convenient for development, the OS driver stack buffers data to improve throughput, often at the cost of latency. A command sent by the game engine may sit in the OS output buffer for several milliseconds before being placed on the USB bus (Start-of-Frame), creating variable delays inconsistent with ERP analysis requirements.
-\end{itemize}
+In the context of the MONEEE system's physical interface, the USB bus introduces non-trivial latency considerations, especially for the transmission of marking commands (\textit{soft-triggers}) from the PC to the amplifier. As a host-controlled bus utilizing polling, data transfer is discretized into frame intervals (1 ms in \textit{Full Speed}) or microframes ($125 \mu s$ in \textit{High Speed}). Additionally, the use of the CDC (\textit{Communication Device Class}) to emulate serial ports implies that data traverses the operating system driver stack, where it may be stored in intermediate buffers to optimize global system performance. This behavior introduces variable and unpredictable latencies of several milliseconds between the logical generation of the event in the game and its physical arrival at the USB bus, which is incompatible with the precision requirements for high-frequency ERP component analysis.

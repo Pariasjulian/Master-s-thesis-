@@ -29,6 +29,7 @@
 \usepackage{fontenc}
 % More advance packages
 
+
 \usepackage{amssymb,amsbsy,mathrsfs,rotating,float,multirow,upgreek,amsmath,lineno,bm}
 \usepackage{breakcites}
 \usepackage{listings}
@@ -231,6 +232,7 @@ Develop a customized neural networks-based non-linear programming optimization s
 %Para rotar texto, objetos y tablas seite.
 \usepackage{rotating}
 
+
 %Permite incluir mecanismos y reacciones químicas
 \usetikzlibrary{positioning}
 \usetikzlibrary{mindmap}
@@ -299,13 +301,6 @@ myedge/.style={->, -{Latex[#1]}}
 
 \newacronym{CREG}{CREG}{Comisión de Regulación de Energía y Gas}
 % Abbreviations
-
-
-
-
-
-
-
 
 
 
@@ -510,18 +505,18 @@ Universidad Nacional de Colombia \\
 %Permite visualizar la bibliografía en la tabla de contenido
 \addcontentsline{toc}{chapter}{References} %Literatura Citada
 
-\let\OLDthebibliography=\thebibliography
-\def\thebibliography#1{\OLDthebibliography{#1}}
-{
+
 %\scriptsize % Comenta o elimina esta línea para volver al tamaño de fuente normal
 \normalsize % O añade esto si quieres asegurarte de que es el tamaño normal
 %\pagestyle{plain}
-\bibliographystyle{dtvstyle}
-% Nombre del documento donde se almacenan las referencias
+% Choose a style (plain, abbrv, unsrt, apalike, IEEEtran, etc.)
+\bibliographystyle{apalike}
+
+% Link the file (note: do NOT include .bib extension here)
 \bibliography{References}
 %\nocite{*}
 \cleardoublepage
-}
+
 
 
 \end{document}

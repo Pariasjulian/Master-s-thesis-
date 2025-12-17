@@ -1,81 +1,109 @@
 \chapter{Hardware Architecture (The MONEEE System)}
 \label{ch:hardware_architecture}
 
-This chapter details the engineering design of the MONEEE system. The architecture is designed to address the specific requirement of low-latency synchronization between game events and physiological signals. The system is built upon a heterogeneous embedded platform that physically separates the real-time acquisition domain from the high-level computational domain.
+The engineering design of the MONEEE system addresses the critical need to capture low-amplitude biopotentials with a high signal-to-noise ratio, while simultaneously guaranteeing low-latency synchronization with external events. To satisfy these requirements, a heterogeneous embedded computing architecture has been implemented, physically decoupling the real-time acquisition domain from the high-level computational domain. This separation allows each subsystem to be optimized for its specific function: signal integrity and determinism for acquisition, and performance and connectivity for processing.
 
-\section{System Overview \& Block Diagram}
+\section{System Topology and Data Flow}
 \label{sec:system_overview}
 
-The MONEEE system operates as a dedicated edge-computing device for EEG acquisition. The data flow is strictly unidirectional for physiological signals, designed to minimize latency and maximizing signal integrity. The high-level signal chain is defined as follows:
+The device operates under an \textit{edge-computing} paradigm, dedicating its resources exclusively to EEG signal management. The architecture establishes a strictly unidirectional data flow from the patient toward the processing unit, designed to minimize transport latency. The signal chain is formally modeled by the following transduction and transmission sequence:
 
 \begin{equation}
     \text{Electrodes} \xrightarrow{\text{Analog}} \text{ADS1299} \xrightarrow{\text{SPI}} \text{TM4C1294} \xrightarrow{\text{UART/SPI}} \text{RPi CM4}
 \end{equation}
 
-The architecture is divided into three primary zones: the \textit{Analog Front-End}, the \textit{Real-Time Core}, and the \textit{Compute Core}.
+As illustrated in Figure \ref{fig:block_diagram}, the hardware is structured into three differentiated functional zones: the Analog Front-End (AFE), the Real-Time Core, and the Compute Core. This segmentation is not merely logical but physical, employing isolation barriers to protect the integrity of physiological measurements.
 
 \begin{figure}[ht]
     \centering
     \includegraphics[width=1.0\textwidth]{Cap_3/Figure/DBP.png}
-    \caption{High-level block diagram of the MONEEE system showing the separation between the acquisition (MCU) and compute (MPU) domains.}
+    \caption{Block diagram of the MONEEE architecture, evidencing the segregation between the deterministic acquisition (MCU) and high-level processing (MPU) domains.}
     \label{fig:block_diagram}
 \end{figure}
 
-\section{Analog Front-End (AFE)}
+\section{Analog Front-End (AFE) and Biomedical Interface}
 \label{sec:analog_front_end}
 
-The Analog Front-End is the interface between the biological medium and the digital system. It is built around the Texas Instruments ADS1299, an 8-channel, 24-bit delta-sigma ADC designed specifically for biopotential measurements.
+The interface between the biological medium and the digital system is realized via the Texas Instruments ADS1299 integrated circuit. This component, a 24-bit analog-to-digital converter (ADC) with 8 simultaneous channels, has been specifically configured to optimize surface electroencephalography capture.
 
-\subsection{Configuration of the ADS1299}
-The ADS1299 is configured to operate in a low-noise, high-gain mode suitable for scalp EEG. The key configuration parameters implemented in the register settings are:
-\begin{itemize}
-    \item \textbf{Gain:} Programmable Gain Amplifier (PGA) set to $24V/V$ to maximize the dynamic range for small EEG signals ($10-100 \mu V$).
-    \item \textbf{Data Rate:} Configured for 250 SPS (Samples Per Second) or 500 SPS, providing a bandwidth sufficient for capturing the P300 and N200 components (typically $<30$ Hz) while allowing for oversampling benefits.
-    \item \textbf{Input Multiplexer:} Set to \texttt{NORMAL} electrode input, with options to switch to internal test signals for calibration.
-\end{itemize}
+To maximize effective resolution on signals typically oscillating between $10$ and $100 \mu V$, the internal Programmable Gain Amplifier (PGA) is set to a gain of $24V/V$. Likewise, the sampling rate is fixed at 250 SPS or 500 SPS. This frequency provides a bandwidth that exceeds Nyquist requirements for the spectral components of interest (P300 and N200, generally located below 30 Hz), while allowing for the advantages of oversampling to reduce the noise floor. The input multiplexer is maintained in \texttt{NORMAL} mode for electrode acquisition, preserving the capability to internally switch toward test signals for self-calibration routines.
 
-\subsection{Bias Drive Implementation (Driven Right Leg)}
-To reject common-mode noise (such as 50/60 Hz mains interference), the system utilizes a Driven Right Leg (DRL) circuit, referred to as the \textit{Bias Drive} in the ADS1299 architecture.
-Instead of a passive ground, the DRL circuit measures the common-mode voltage on the sensing electrodes, inverts it, amplifies it, and drives it back into the body through a reference electrode. This negative feedback loop actively cancels interference, significantly improving the Common Mode Rejection Ratio (CMRR) to typically $>110$ dB.
+The suppression of electromagnetic interference, primarily 50/60 Hz mains noise, is managed through an active Driven Right Leg (DRL) topology. Unlike a passive ground reference, the ADS1299's \textit{Bias Drive} circuit monitors the common-mode voltage present at the detection electrodes. This signal is inverted, amplified, and reinjected into the patient's body through the reference electrode. This negative feedback loop actively cancels interference, raising the Common-Mode Rejection Ratio (CMRR) to levels exceeding $110$ dB, which is indispensable for unshielded clinical environments.
 
-\subsection{Power Supply Isolation}
-Safety and noise performance dictate the power architecture. The AFE is powered by a dedicated Li-Po battery managed by a PMIC (Power Management IC). Crucially, the analog power domain ($AVDD$) is isolated from the noisy digital domains of the Raspberry Pi using Low-Dropout Regulators (LDOs) with high Power Supply Rejection Ratio (PSRR). This ensures that the high-frequency switching noise from the Compute Module's CPU rails does not couple into the sensitive EEG measurements.
+Finally, signal integrity is ensured through rigorous power management. The AFE is powered by a dedicated Li-Po battery and regulated by a PMIC (Power Management Integrated Circuit). The analog power domain ($AVDD$) is isolated from digital rails via Low-Dropout Regulators (LDOs) with high Power Supply Rejection Ratio (PSRR). This strategy prevents high-frequency switching noise, inherent to CPU operation in the compute module, from capacitively coupling to the amplifier input stages.
 
-\section{The Digital Core (The Split-Architecture)}
+\section{The Digital Core: Heterogeneous Processing}
 \label{sec:digital_core}
 
-The digital processing load is distributed between a microcontroller and a microprocessor, leveraging the strengths of each.
+The digital architecture implements a shared responsibility model, distributing the computational load between a real-time microcontroller and an application microprocessor.
 
-\subsection{Real-Time Unit (TI TM4C1294)}
-The Texas Instruments TM4C1294 (ARM Cortex-M4F) serves as the hard real-time controller.
-\begin{itemize}
-    \item \textbf{Role:} It acts as the SPI Master for the ADS1299. Its primary responsibility is to service the \texttt{DRDY} (Data Ready) interrupt from the ADC immediately upon assertion, ensuring zero sample loss.
-    \item \textbf{Floating-Point Unit (FPU):} The hardware FPU allows for real-time application of basic digital filters (e.g., notch filters for line noise) or scaling factors before data transmission, without stalling the interrupt service routines.
-    \item \textbf{Determinism:} Unlike the Linux-based CM4, the TM4C code runs on bare metal (or a lightweight RTOS), guaranteeing that the timestamp applied to each incoming data packet is accurate to within microseconds.
-\end{itemize}
+The Real-Time Unit, based on the Texas Instruments TM4C1294 (ARM Cortex-M4F), acts as the acquisition system master. Operating on \textit{bare metal} or a lightweight real-time operating system, the TM4C guarantees deterministic behavior. Its primary function is to service the \texttt{DRDY} (Data Ready) hardware interrupt from the ADC immediately, ensuring lossless sample capture. Additionally, its Floating Point Unit (FPU) facilitates the application of in-situ digital pre-processing, such as notch filtering or scaling, without compromising interrupt service times. It is at this stage that the hardware \textit{timestamp} is assigned, achieving microsecond precision.
 
-\subsection{Compute Unit (Raspberry Pi CM4)}
-The Raspberry Pi Compute Module 4 acts as the system's "Host."
-\begin{itemize}
-    \item \textbf{Role:} It manages high-bandwidth data storage (to eMMC or SD card), runs the Lab Streaming Layer (LSL) gateway, and handles network transmission via Wi-Fi.
-    \item \textbf{Throughput:} The CM4 processes the incoming stream from the TM4C, formats it into LSL chunks, and broadcasts it to the serious game running on the tablet or local network.
-\end{itemize}
+Subsequently, data is transferred to the Compute Unit, constituted by a Raspberry Pi Compute Module 4 (CM4). This module runs a full operating system (Linux) and assumes high-level tasks: mass storage management, execution of the \textit{Lab Streaming Layer} (LSL) gateway, and telemetric transmission via Wi-Fi. The CM4 processes the continuous stream coming from the microcontroller, packaging it into standardized formats for consumption by the serious game software.
 
-\subsection{Inter-Processor Communication}
-Data is transferred from the TM4C1294 to the RPi CM4 via a high-speed serial interface.
-\begin{itemize}
-    \item \textbf{Physical Layer:} A high-speed UART connection (baud rate $>921600$) or SPI is utilized. To prevent ground loops between the battery-powered AFE and the potentially mains-connected tablet (if charging), this link is galvanically isolated using digital isolators (e.g., ISO77xx series).
-    \item \textbf{Protocol:} A lightweight binary packet protocol is defined, wrapping the 24-bit EEG data and the 32-bit hardware timestamp into a frame with a cyclic redundancy check (CRC) to ensure data integrity during transmission.
-\end{itemize}
+Communication between both cores is established via a high-speed serial interface (UART $>921600$ baud or SPI). To guarantee patient safety and signal integrity, this digital link includes galvanic isolation (utilizing digital isolators such as the ISO77xx series). This prevents the formation of ground loops between the floating acquisition stage (battery) and any peripheral connected to the electrical grid. The communication protocol employs lightweight binary frames encapsulating the 24-bit data along with their timestamps, protected by a Cyclic Redundancy Check (CRC) to verify transmission integrity.
 
-\section{The Event Interface (USB-C)}
+\section{Event Synchronization Interface (USB-C)}
 \label{sec:event_interface}
 
-The physical interface for the serious game tablet is a USB Type-C connector.
+Synchronization with the stimulation platform (tablet) is physically performed through a USB Type-C port. This port, managed by the system's USB controller, allows for the reception of "event markers" generated by the game software at the precise instant of the stimulus.
 
-\subsection{Hardware Implementation}
-The USB-C port is configured as a downstream facing port (or device mode depending on the tablet role) using a USB Controller integrated into the TM4C or CM4 carrier board. This port handles the reception of "event markers" sent by the game.
+Given that the connection of commercial devices introduces significant electrical noise—a product of the tablet's internal DC-DC converters—the MONEEE system design incorporates total isolation of the USB bus. The data lines ($D+/D-$) traverse a specialized isolation integrated circuit (e.g., ADuM3160), effectively breaking galvanic continuity. This configuration ensures that the "clean" ground reference of the EEG sensors remains floating and decoupled from the "dirty" ground of the tablet, thus preserving the signal-to-noise ratio necessary for the reliable detection of evoked potentials.
 
-\subsection{Signal Conditioning and Isolation}
-Connecting a commercial tablet via USB introduces significant noise risks. The tablet's internal DC-DC converters can inject noise into the USB ground line.
-To mitigate this, the MONEEE system employs full USB isolation. The data lines ($D+/D-$) pass through a specialized USB isolator IC (e.g., ADuM3160 or similar), effectively breaking the galvanic path. This ensures that the "clean" ground of the EEG sensors remains floating relative to the "dirty" ground of the tablet, preserving the signal-to-noise ratio required for detecting the ERPs.
+For this project, we have established the MONEEE system as a robust electronic design aligned with acquisition systems in its segment. The designs presented in Figures \ref{fig:MODULOEEG}, \ref{fig:FILTROSACOPLE}, \ref{fig:MODULOCOMUNICACION}, \ref{fig:Led_Head}, \ref{fig:Board_ADS}, and \ref{fig:CPU} illustrate our proposal for an EEG signal acquisition board, conceived to significantly improve the capacity of real-time BCI systems, overcoming current challenges and contributing to the advancement of technology in this field.
+
+%=======================================
+
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\linewidth]{Cap_3/Figure/ModuloEEG.png}
+    \caption{Schematic design for the module responsible for acquiring EEG signals.}
+    \label{fig:MODULOEEG}
+\end{figure}
+
+%====================================
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\linewidth]{Cap_3/Figure/Filtros electrodos.png}
+    \caption{Schematic design of coupling filters.}
+    \label{fig:FILTROSACOPLE}
+\end{figure}
+
+%====================================
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\linewidth]{Cap_3/Figure/Modulo comunicacion.png}
+    \caption{Schematic design of the module responsible for communicating the collected data to another device or to the cloud.}
+    \label{fig:MODULOCOMUNICACION}
+\end{figure}
+
+%====================================
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\linewidth]{Cap_3/Figure/Led_head.png}
+    \caption{Module for impedance visualization of the electrodes.}
+    \label{fig:Led_Head}
+\end{figure}
+
+%====================================
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\linewidth]{Cap_3/Figure/Board_ADS.png}
+    \caption{Connection between the different ADS1299 acquisition modules.}
+    \label{fig:Board_ADS}
+\end{figure}
+
+%====================================
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\linewidth]{Cap_3/Figure/MONEEE_CPU.png}
+    \caption{Motherboard for microcontroller and microprocessor.}
+    \label{fig:CPU}
+\end{figure}
+
