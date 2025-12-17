@@ -9,9 +9,9 @@ This chapter establishes the scientific and engineering foundations required to 
 
 Electroencephalography (EEG) measures the electrical activity of the brain via electrodes placed on the scalp. While continuous EEG provides information about the state of the brain (e.g., sleep stages, seizure activity), cognitive neuroscience often focuses on the brain's response to specific sensory, cognitive, or motor events. These time-locked responses are known as Event-Related Potentials (ERPs).
 
-\begin{figure}[h]
+\begin{figure}[ht]
     \centering
-    % \includegraphics[width=0.8\textwidth]{p300_waveform.png}
+    \includegraphics[width=0.8\textwidth]{Cap_2/Figure/p300_waveform.png}
     \caption{Typical waveform of an Event-Related Potential showing P300 and N200 components.}
     \label{fig:p300_waveform}
 \end{figure}
@@ -21,20 +21,20 @@ ERPs are small voltage fluctuations (typically $1\mu V$ to $20\mu V$) embedded w
 
 \begin{itemize}
     \item \textbf{The N200 (N2):} A negative deflection peaking approximately 200--350 ms after stimulus onset. It is primarily associated with executive control functions, specifically mismatch detection (when a stimulus deviates from expectation) and response inhibition.
-    \item \textbf{The P300 (P3b):} A large positive deflection peaking 300--600 ms post-stimulus. The P300 reflects processes related to context updating and the allocation of attentional resources. Its amplitude is often proportional to the improbability of the target stimulus (the "oddball" effect), making it a robust metric for assessing attention and cognitive workload in ADHD patients.
+    \item \textbf{The P300 (P3b):} A large positive deflection peaking 300--600 ms post-stimulus. The P300 reflects processes related to context updating and the allocation of attentional resources. Its amplitude is often proportional to the improbability of the target stimulus (the 'oddball' effect), making it a robust metric for assessing attention and cognitive workload in ADHD patients.
 \end{itemize}
 
 \subsection{The Necessity of Millisecond-Level Precision}
 Because ERPs are much smaller than background brain activity, they cannot be reliably identified in a single trial. Instead, researchers use \textit{Signal Averaging}. By averaging $N$ time-locked trials, the background noise (assumed to be random with a mean of zero) decreases by a factor of $\sqrt{N}$, while the time-locked ERP signal remains constant.
 
-However, this technique relies on the assumption of temporal stability. If the synchronization marker (the "trigger" indicating when the game event occurred) has variable latency—known as \textit{jitter}—the averaging process will "smear" the ERP peaks. Mathematically, if the latency follows a Gaussian distribution with standard deviation $\sigma_t$, the averaged signal is effectively low-pass filtered. A jitter of just $\sigma_t > 10$ ms can significantly attenuate high-frequency components of the N200, rendering the diagnostic data invalid. Therefore, the MONEEE system requires hard-real-time synchronization capabilities.
+However, this technique relies on the assumption of temporal stability. If the synchronization marker (the 'trigger' indicating when the game event occurred) has variable latency—known as \textit{jitter}—the averaging process will 'smear' the ERP peaks. Mathematically, if the latency follows a Gaussian distribution with standard deviation $\sigma_t$, the averaged signal is effectively low-pass filtered. A jitter of just $\sigma_t > 10$ ms can significantly attenuate high-frequency components of the N200, rendering the diagnostic data invalid. Therefore, the MONEEE system requires hard-real-time synchronization capabilities.
 
 \section{Signal Acquisition Hardware}
 \label{sec:hardware}
 
 The fidelity of the EEG data depends heavily on the analog-front-end architecture. The MONEEE system utilizes the Texas Instruments ADS1299, a specialized Analog-to-Digital Converter (ADC) for biopotential measurements.
 
-\subsection{Delta-Sigma ($\Delta\Sigma$) Analog-to-Digital Converters}
+\subsection{Delta-Sigma (\texorpdfstring{$\Delta\Sigma$}{Delta-Sigma}) Analog-to-Digital Converters}
 Unlike Successive Approximation Register (SAR) ADCs often found in general-purpose microcontrollers, the ADS1299 is a Delta-Sigma modulator. This architecture is chosen for its superior noise performance and dynamic range.
 
 \begin{enumerate}
@@ -43,9 +43,9 @@ Unlike Successive Approximation Register (SAR) ADCs often found in general-purpo
     \item \textbf{Digital Filtering:} A subsequent digital decimation filter removes the high-frequency noise and reduces the data rate to the user-selected output (e.g., 250 SPS or 500 SPS).
 \end{enumerate}
 
-\begin{figure}[h]
+\begin{figure}[ht]
     \centering
-    % \includegraphics[width=0.8\textwidth]{delta_sigma_block.png}
+    \includegraphics[width=0.8\textwidth]{Cap_2/Figure/delta_sigma_block.png}
     \caption{Simplified block diagram of a Delta-Sigma ADC architecture.}
     \label{fig:delta_sigma}
 \end{figure}
@@ -67,7 +67,7 @@ To balance signal integrity with data throughput, modern acquisition systems oft
 
 Synchronizing the EEG data (recorded by hardware) with the game events (generated by software) is the principal challenge of this thesis. Several methods exist, each with trade-offs regarding latency and intrusiveness.
 
-\begin{table}[h]
+\begin{table}[ht]
     \centering
     \caption{Comparison of Synchronization Methods}
     \label{tab:sync_methods}

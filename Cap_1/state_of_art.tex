@@ -1,4 +1,4 @@
-\section{Estado del arte}\label{sec:stateofart}
+\section{State of art}\label{sec:stateofart}
 
 
 In recent years, numerous wireless systems for EEG data acquisition have been developed, with two main approaches standing out: conventional remote monitoring systems and portable smart systems. The former simply digitize the EEG signals and transmit them to a remote unit for processing, usually in a deferred manner \cite{arpaia2020wearable}. On the other hand, portable systems preprocess the signals on a local device, such as a microcontroller (MCU), and wirelessly transmit the data using low-power consumption protocols. \ref{table:bci_hardware} This latter approach is crucial for real-time applications, where low latency is essential.
@@ -13,21 +13,22 @@ Battery life \cite{niso2023wireless} is a significant constraint for portable sy
 
 
 \begin{table}[H]
-    \caption{Dispositivos de adquisición utilizados para BCI. La tabla ofrece una descripción general de los diferentes dispositivos de hardware, sus especificaciones y protocolos de comunicación.}
+    \caption{Acquisition devices used for BCI. The table provides an overview of the different hardware devices, their specifications, and communication protocols.}
     \label{table:bci_hardware}
     \centering
-    \begin{tabular}{|p{2cm}|p{1.5cm}|p{1.6cm}|p{1.6cm}|p{1.7cm}|p{1.4cm}|p{1.8cm}|p{1.4cm}|}
+    \footnotesize
+    \begin{tabularx}{\textwidth}{|X|p{1.8cm}|p{1.8cm}|c|>{\centering\arraybackslash}X|c|X|c|}
         \hline
-        \textbf{Hardware BCI} & \textbf{Empresa} & \textbf{Tipo de Electrodo} & \textbf{Canales} & \textbf{Frecuencia de Muestreo} & \textbf{AFE} & \textbf{Protocolo y Transferencia de Datos} & \textbf{Duración de la Batería} \\ \hline
-        Cyton + Daisy \cite{OpenBCI_CytonDaisy} & OpenBCI & Flexible / Húmedo / Seco & 16 & 250 Hz- -16 kHz & ADS1299 & RF / BLE / Wi-Fi & 8 h \\ \hline
-        actiCAP \cite{BrainProducts_ActiCap} & Brain Products GmbH & Flexible / Húmedo / Seco & 16 & 256 Hz- -16 kHz & - & USB & 16 h \\ \hline
+        \textbf{Hardware BCI} & \textbf{Empresa} & \textbf{Tipo de Electrodo} & \textbf{Canales} & \textbf{Frecuencia de Muestreo} & \textbf{AFE} & \textbf{Protocolo y Transferencia} & \textbf{Batería} \\ \hline
+        Cyton + Daisy \cite{OpenBCI_CytonDaisy} & OpenBCI & Flexible / Húmedo / Seco & 16 & 250 Hz - 16 kHz & ADS1299 & RF / BLE / Wi-Fi & 8 h \\ \hline
+        actiCAP \cite{BrainProducts_ActiCap} & Brain Products GmbH & Flexible / Húmedo / Seco & 16 & 256 Hz - 16 kHz & - & USB & 16 h \\ \hline
         EPOC X \cite{Emotiv_EPOCX} & Emotiv & Rígido / Húmedo & 14 & 128 Hz & - & BLE / Bluetooth & 6--12 h \\ \hline
         Diadem \cite{Bitbrain_Diadem} & Bitbrain & Rígido / Seco & 12 & 256 Hz & - & Bluetooth & 8 h \\ \hline
         g.Nautilus \cite{Gtec_GNautilusProFlexible} & g.tec & Flexible & 8 / 16 / 32 & 250 Hz & ADS1299 & Propietario & 10 h \\ \hline
         Plataforma para EEG ambulatorio \cite{pinho2014wireless} & - & Activo / Seco & 32 & 250 Hz- -1 kHz & ADS1299 & Wi-Fi 802.11 b/g/n & 26 h \\ \hline
         Sistema para neurofeedback \cite{Totev2023} & - & Pasivo / Seco & 40 & 250 Hz & ADS1298 & RF & - \\ \hline
         BEATS \cite{Beats} & - & Flexible / Húmedo & 32 & 4 kHz & ADS1299 & Wi-Fi & 24 h (cableado) \\ \hline
-    \end{tabular}
+    \end{tabularx}
 \end{table}
 
 
@@ -40,6 +41,6 @@ Each of these devices represents a different approach to EEG signal acquisition,
 
 
 
-\subsection{Evolution of Portable High-Fidelity EEG Architectures}
+%\subsection{Evolution of Portable High-Fidelity EEG Architectures}
 
-\subsection{Synchronization Paradigms: The "Jitter" Problem in Neurogaming}
+%\subsection{Synchronization Paradigms: The "Jitter" Problem in Neurogaming}

@@ -1,4 +1,4 @@
-\documentclass[12pt,english,openany,twoside,letterpaper]{book}
+\documentclass[12pt,openany,twoside,letterpaper]{book}
 
 %Muestra los márgenes del documento para evitar Warnings
 %Para activar la siguiente línea quite el simbolo % 
@@ -33,6 +33,7 @@
 \usepackage{breakcites}
 \usepackage{listings}
 \usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
 \usepackage{tikz}
 \usepgfplotslibrary{groupplots}
 \usepackage{longtable}
@@ -205,7 +206,7 @@ Develop a customized neural networks-based non-linear programming optimization s
 % Permite ver y configurar los parámetros de la página
 \setlength{\voffset}{-0.25in}
 \setlength{\headwidth}{467pt}
-\setlength{\headheight}{22pt}
+\setlength{\headheight}{25.33461pt}
 \setlength{\oddsidemargin}{0pt}
 \setlength{\evensidemargin}{0pt}
 \setlength{\marginparwidth}{0pt}
@@ -286,13 +287,11 @@ myedge/.style={->, -{Latex[#1]}}
             section=chapter, 
             nomain=true]{glossaries-extra}
 \setabbreviationstyle[acronym]{long-short}
-\renewcommand{\glsnamefont}[1]{\textsc{\normalfont\large\bfseries #1}}
+\renewcommand{\glsnamefont}[1]{\textsc{\normalfont\large #1}}
 \glssetcategoryattribute{acronym}{hyperoutside}{false}
 %Inicio del documento, no olvide la etiqueta de cierre al final \end{document}
 %\newglossary*{symbols}{List of Symbols}
 \input{Notations/notations}
-\makeglossaries
-\usepackage{glossaries}
 \makeglossaries
 
 \usepackage{graphicx}
@@ -300,15 +299,7 @@ myedge/.style={->, -{Latex[#1]}}
 
 \newacronym{CREG}{CREG}{Comisión de Regulación de Energía y Gas}
 % Abbreviations
-\usepackage[acronym=true, 
-            toc=true, 
-            numberline=false, 
-            nopostdot=true, 
-            section=chapter, 
-            nomain=true]{glossaries-extra}
-\setabbreviationstyle[acronym]{long-short}
-\renewcommand{\glsnamefont}[1]{\textsc{\normalfont\large\bfseries #1}}
-\glssetcategoryattribute{acronym}{hyperoutside}{false}
+
 
 
 
@@ -381,8 +372,8 @@ myedge/.style={->, -{Latex[#1]}}
 
 %Nombres y formatos de títulos, tablas y figuras
 %Use \sffamily para dejar con letra Sans Serif, sin etiqueta queda LaTeX clásico
-\renewcommand{\listfigurename}{\sffamily Lista de Figuras}
-\renewcommand{\listtablename}{\sffamily Lista de Tablas}
+\renewcommand{\listfigurename}{\sffamily List of Figures}
+\renewcommand{\listtablename}{\sffamily List of Tables}
 \renewcommand{\contentsname}{\sffamily Content}
 \renewcommand{\chaptername}{\sffamily Chapter}
 \renewcommand{\tablename}{\scriptsize \centering \textbf{Table}}
@@ -489,11 +480,11 @@ Universidad Nacional de Colombia \\
 \endgroup
 \include{Julian/abstract}
 \listoffigures
-\addcontentsline{toc}{chapter}{Lista de figuras}
+\addcontentsline{toc}{chapter}{List of figures}
 \listoftables 
-\addcontentsline{toc}{chapter}{Lista de Tablas}
+\addcontentsline{toc}{chapter}{List of tables}
 \tableofcontents 
-\addcontentsline{toc}{chapter}{Contenido}
+\addcontentsline{toc}{chapter}{Content}
 \clearpage
 }
 
@@ -517,7 +508,7 @@ Universidad Nacional de Colombia \\
 % \end{appendix}
 
 %Permite visualizar la bibliografía en la tabla de contenido
-\addcontentsline{toc}{chapter}{Referencias} %Literatura Citada
+\addcontentsline{toc}{chapter}{References} %Literatura Citada
 
 \let\OLDthebibliography=\thebibliography
 \def\thebibliography#1{\OLDthebibliography{#1}}
