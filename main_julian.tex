@@ -30,6 +30,11 @@
 % More advance packages
 
 
+\usepackage{tikz}
+\usetikzlibrary{shapes, arrows.meta, positioning, chains, fit, backgrounds, patterns, babel}
+\usepackage{xcolor}
+
+
 \usepackage{amssymb,amsbsy,mathrsfs,rotating,float,multirow,upgreek,amsmath,lineno,bm}
 \usepackage{breakcites}
 \usepackage{listings}
@@ -116,10 +121,10 @@
 \newcommand{\Objectivethreename}{}
 
 %% defining objective names
-\renewcommand{\Objectiveonename}{Develop a neural networks-based optimization strategy that is adaptable to different noise levels and specific restrictions, ensuring results comparable to conventional optimization techniques in terms of compliance with resSingle-trial kernel-based functional connectivity for enhanced feature extriactions and robustness in EEG-based MI-BCI}
-\renewcommand{\Objectivetwoname}{
-Develop a customized neural networks-based non-linear programming optimization scheme for gas-powered energy systems that considers physical limits and non-differentiable functions, focusing on modeling gas supply behavior and compliance with system constraintsKCS-FCnet: Kernel Cross-Spectral Functional Connectivity Network for automatic EEG representation in MI-BCI}
-\renewcommand{\Objectivethreename}{Develop a customized neural networks-based non-linear programming optimization strategy for the Colombian gas-powered energy system, modeling the behavior of supply-demand flows and pressures and incorporating physical boundaries and non-differentiable functions that ensure efficiency over time and convergencequalitative and quantitative post-hoc and intrinsic interpretation for MI-BCI models}
+% \renewcommand{\Objectiveonename}{Develop a neural networks-based optimization strategy that is adaptable to different noise levels and specific restrictions, ensuring results comparable to conventional optimization techniques in terms of compliance with resSingle-trial kernel-based functional connectivity for enhanced feature extriactions and robustness in EEG-based MI-BCI}
+% \renewcommand{\Objectivetwoname}{
+% Develop a customized neural networks-based non-linear programming optimization scheme for gas-powered energy systems that considers physical limits and non-differentiable functions, focusing on modeling gas supply behavior and compliance with system constraintsKCS-FCnet: Kernel Cross-Spectral Functional Connectivity Network for automatic EEG representation in MI-BCI}
+% \renewcommand{\Objectivethreename}{Develop a customized neural networks-based non-linear programming optimization strategy for the Colombian gas-powered energy system, modeling the behavior of supply-demand flows and pressures and incorporating physical boundaries and non-differentiable functions that ensure efficiency over time and convergencequalitative and quantitative post-hoc and intrinsic interpretation for MI-BCI models}
 
 %%%
 
@@ -424,24 +429,24 @@ Universidad Nacional de Colombia \\
 \end{center}
 
 % Dedicatorias
-\newpage
-\thispagestyle{empty}
-\begin{flushright}
-\begin{minipage}{12.5cm}
-\noindent
-\\[10em]
-%Modificar la cita que se quiere agregar
-"The concern for man and his destiny must always be the primary interest of any technical effort. Never forget this between your diagrams and equations"
-\\[3em]
-\\ \textit{Albert Einstein}
-\\[10em]
-%Para anular la adición de una segunda cita anule las siguientes lineas desde acá mediante comentario (%)
-"Believe you can, and you are halfway there."
-\\[3em]
-\\ \textit{Theodore Roosevelt}
-%Hasta acá!
-\end{minipage}
-\end{flushright} 
+% \newpage
+% \thispagestyle{empty}
+% \begin{flushright}
+% \begin{minipage}{12.5cm}
+% \noindent
+% \\[10em]
+% %Modificar la cita que se quiere agregar
+% "The concern for man and his destiny must always be the primary interest of any technical effort. Never forget this between your diagrams and equations"
+% \\[3em]
+% \\ \textit{Albert Einstein}
+% \\[10em]
+% %Para anular la adición de una segunda cita anule las siguientes lineas desde acá mediante comentario (%)
+% "Believe you can, and you are halfway there."
+% \\[3em]
+% \\ \textit{Theodore Roosevelt}
+% %Hasta acá!
+% \end{minipage}
+% \end{flushright} 
 
 % Declaracíon de originalidad del texto y del contenido
 % No modificar, se hace automáticamente con los comandos ya definidos
@@ -465,15 +470,15 @@ Universidad Nacional de Colombia \\
 
 {\pagestyle{plain} \pagenumbering{roman}
 \setlength{\parskip}{1mm}
-\include{Julian/agradecimientos}   
-\include{Julian/abreviaciones}
+\include{Agradecimientos}   
+\include{abreviaciones}
 \begingroup
 %\pagenumbering{roman}
 %\printglossary[type=\acronymtype, title=Abbreviations]
 %\glsresetall
 %\cleardoublepage
 \endgroup
-\include{Julian/abstract}
+\include{abstract}
 \listoffigures
 \addcontentsline{toc}{chapter}{List of figures}
 \listoftables 
@@ -496,8 +501,8 @@ Universidad Nacional de Colombia \\
 \include{Cap_2/Theoretical_Framework}
 \include{Cap_3/Hardware_Architecture}
 \include{Cap_4/Firmware_Synchronization}
-\include{Cap_5/Validation_Results}
-\include{Cap_6/Conclusion}
+\include{Cap_5/Final_remarks}
+
 
 
 % \end{appendix}

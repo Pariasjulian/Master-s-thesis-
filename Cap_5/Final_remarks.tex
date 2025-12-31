@@ -1,0 +1,50 @@
+\chapter{Final remarks}
+
+
+\section{Conclusion and discussion}    
+\label{sec:conclusion}
+
+\begin{itemize}
+    \item  This research confirms that the MONEEE system's partitioned design effectively solves the trade-off between signal fidelity and computational power. By physically decoupling the acquisition domain (TM4C1294) from the compute domain (Raspberry Pi CM4), the system preserves signal integrity against digital switching noise. The results demonstrate that handling biopotentials in a deterministic ("bare metal") environment is a critical requirement for achieving the signal-to-noise ratio necessary to reliably detect low-amplitude ERP components, such as the N200 and P300, without the interference typical of complex operating systems.
+
+    \item The investigation establishes that the proposed hardware injection strategy offers a superior alternative to traditional software-based time-stamping. By physically coupling event markers with EEG samples at the microcontroller level, the system eliminates the variable latency and \textit{jitter} inherent in software layers. This thesis demonstrates that such precise synchronization—bounded strictly by the sampling rate—is a fundamental prerequisite for preventing signal attenuation during the averaging process, thereby ensuring the diagnostic validity and temporal precision of the recorded data.
+
+    \item  The development and validation of the \texttt{MoneLib} library represents a significant contribution to the field of neuroinformatics, bridging the gap between custom hardware and the Unity engine. By functioning as a low-latency interface, \texttt{MoneLib} enables a precise millisecond-level alignment between user interactions and physiological responses. This innovation not only proves the technical viability of the system but provides a robust methodological framework for conducting cognitive assessments within "serious games," enabling research in scenarios that offer significantly higher ecological validity than static laboratory paradigms.
+\end{itemize}
+
+\section{Future work}
+\label{sec:future_work}
+
+\begin{itemize}
+    \item 
+\end{itemize}
+
+\section{Academic contributions}
+\label{sec:academic_contributions}
+
+\subsection{Journal papers}
+\label{sec:journal_papers}
+
+\subsection{Patents}
+\label{sec:patents}
+
+\subsection{Software registered}
+\label{sec:software}
+
+
+%\label{chap:validation_results}
+
+%\section{Signal Quality Verification}
+%Noise floor analysis (Input-shorted test).
+%Frequency response analysis.
+
+%\section{Synchronization Latency Analysis (Crucial)}
+%\subsection{The "Round-Trip" Test}
+%A test setup where the tablet flashes the screen AND sends the Hex code. A photodiode measures the screen, and the MONEEE records the Hex code. The time difference is the System Latency.
+
+%\subsection{Jitter Measurement}
+%Quantifying the variability of the USB transmission.
+
+%\section{Proof of Concept}
+%A pilot recording of a P300 response using the Serious Game on a healthy subject.
+

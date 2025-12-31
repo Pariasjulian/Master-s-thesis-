@@ -9,7 +9,7 @@ The engineering design of the MONEEE system addresses the critical need to captu
 The device operates under an \textit{edge-computing} paradigm, dedicating its resources exclusively to EEG signal management. The architecture establishes a strictly unidirectional data flow from the patient toward the processing unit, designed to minimize transport latency. The signal chain is formally modeled by the following transduction and transmission sequence:
 
 \begin{equation}
-    \text{Electrodes} \xrightarrow{\text{Analog}} \text{ADS1299} \xrightarrow{\text{SPI}} \text{TM4C1294} \xrightarrow{\text{UART/SPI}} \text{RPi CM4}
+    \text{Electrodes} \xrightarrow{\text{Analog}} \text{ADS1299} \xrightarrow{\text{SPI}} \text{TM4C1294} \xrightarrow{\text{SPI}} \text{RPi CM4}
 \end{equation}
 
 As illustrated in Figure \ref{fig:block_diagram}, the hardware is structured into three differentiated functional zones: the Analog Front-End (AFE), the Real-Time Core, and the Compute Core. This segmentation is not merely logical but physical, employing isolation barriers to protect the integrity of physiological measurements.
@@ -20,35 +20,6 @@ As illustrated in Figure \ref{fig:block_diagram}, the hardware is structured int
     \caption{Block diagram of the MONEEE architecture, evidencing the segregation between the deterministic acquisition (MCU) and high-level processing (MPU) domains.}
     \label{fig:block_diagram}
 \end{figure}
-
-\section{Analog Front-End (AFE) and Biomedical Interface}
-\label{sec:analog_front_end}
-
-The interface between the biological medium and the digital system is realized via the Texas Instruments ADS1299 integrated circuit. This component, a 24-bit analog-to-digital converter (ADC) with 8 simultaneous channels, has been specifically configured to optimize surface electroencephalography capture.
-
-To maximize effective resolution on signals typically oscillating between $10$ and $100 \mu V$, the internal Programmable Gain Amplifier (PGA) is set to a gain of $24V/V$. Likewise, the sampling rate is fixed at 250 SPS or 500 SPS. This frequency provides a bandwidth that exceeds Nyquist requirements for the spectral components of interest (P300 and N200, generally located below 30 Hz), while allowing for the advantages of oversampling to reduce the noise floor. The input multiplexer is maintained in \texttt{NORMAL} mode for electrode acquisition, preserving the capability to internally switch toward test signals for self-calibration routines.
-
-The suppression of electromagnetic interference, primarily 50/60 Hz mains noise, is managed through an active Driven Right Leg (DRL) topology. Unlike a passive ground reference, the ADS1299's \textit{Bias Drive} circuit monitors the common-mode voltage present at the detection electrodes. This signal is inverted, amplified, and reinjected into the patient's body through the reference electrode. This negative feedback loop actively cancels interference, raising the Common-Mode Rejection Ratio (CMRR) to levels exceeding $110$ dB, which is indispensable for unshielded clinical environments.
-
-Finally, signal integrity is ensured through rigorous power management. The AFE is powered by a dedicated Li-Po battery and regulated by a PMIC (Power Management Integrated Circuit). The analog power domain ($AVDD$) is isolated from digital rails via Low-Dropout Regulators (LDOs) with high Power Supply Rejection Ratio (PSRR). This strategy prevents high-frequency switching noise, inherent to CPU operation in the compute module, from capacitively coupling to the amplifier input stages.
-
-\section{The Digital Core: Heterogeneous Processing}
-\label{sec:digital_core}
-
-The digital architecture implements a shared responsibility model, distributing the computational load between a real-time microcontroller and an application microprocessor.
-
-The Real-Time Unit, based on the Texas Instruments TM4C1294 (ARM Cortex-M4F), acts as the acquisition system master. Operating on \textit{bare metal} or a lightweight real-time operating system, the TM4C guarantees deterministic behavior. Its primary function is to service the \texttt{DRDY} (Data Ready) hardware interrupt from the ADC immediately, ensuring lossless sample capture. Additionally, its Floating Point Unit (FPU) facilitates the application of in-situ digital pre-processing, such as notch filtering or scaling, without compromising interrupt service times. It is at this stage that the hardware \textit{timestamp} is assigned, achieving microsecond precision.
-
-Subsequently, data is transferred to the Compute Unit, constituted by a Raspberry Pi Compute Module 4 (CM4). This module runs a full operating system (Linux) and assumes high-level tasks: mass storage management, execution of the \textit{Lab Streaming Layer} (LSL) gateway, and telemetric transmission via Wi-Fi. The CM4 processes the continuous stream coming from the microcontroller, packaging it into standardized formats for consumption by the serious game software.
-
-Communication between both cores is established via a high-speed serial interface (UART $>921600$ baud or SPI). To guarantee patient safety and signal integrity, this digital link includes galvanic isolation (utilizing digital isolators such as the ISO77xx series). This prevents the formation of ground loops between the floating acquisition stage (battery) and any peripheral connected to the electrical grid. The communication protocol employs lightweight binary frames encapsulating the 24-bit data along with their timestamps, protected by a Cyclic Redundancy Check (CRC) to verify transmission integrity.
-
-\section{Event Synchronization Interface (USB-C)}
-\label{sec:event_interface}
-
-Synchronization with the stimulation platform (tablet) is physically performed through a USB Type-C port. This port, managed by the system's USB controller, allows for the reception of "event markers" generated by the game software at the precise instant of the stimulus.
-
-Given that the connection of commercial devices introduces significant electrical noise—a product of the tablet's internal DC-DC converters—the MONEEE system design incorporates total isolation of the USB bus. The data lines ($D+/D-$) traverse a specialized isolation integrated circuit (e.g., ADuM3160), effectively breaking galvanic continuity. This configuration ensures that the "clean" ground reference of the EEG sensors remains floating and decoupled from the "dirty" ground of the tablet, thus preserving the signal-to-noise ratio necessary for the reliable detection of evoked potentials.
 
 For this project, we have established the MONEEE system as a robust electronic design aligned with acquisition systems in its segment. The designs presented in Figures \ref{fig:MODULOEEG}, \ref{fig:FILTROSACOPLE}, \ref{fig:MODULOCOMUNICACION}, \ref{fig:Led_Head}, \ref{fig:Board_ADS}, and \ref{fig:CPU} illustrate our proposal for an EEG signal acquisition board, conceived to significantly improve the capacity of real-time BCI systems, overcoming current challenges and contributing to the advancement of technology in this field.
 
@@ -107,3 +78,119 @@ For this project, we have established the MONEEE system as a robust electronic d
     \label{fig:CPU}
 \end{figure}
 
+\section{Analog Front-End (AFE) and Biomedical Interface}
+\label{sec:analog_front_end}
+
+The interface between the biological medium and the digital system is realized via the Texas Instruments ADS1299 integrated circuit. This component, a 24-bit analog-to-digital converter (ADC) with 8 simultaneous channels, has been specifically configured to optimize surface electroencephalography capture.
+
+To maximize effective resolution on signals typically oscillating between $10$ and $100 \mu V$, the internal Programmable Gain Amplifier (PGA) is set to a gain of $24V/V$. Likewise, the sampling rate is fixed at 250 SPS or 500 SPS. This frequency provides a bandwidth that exceeds Nyquist requirements for the spectral components of interest (P300 and N200, generally located below 30 Hz), while allowing for the advantages of oversampling to reduce the noise floor. The input multiplexer is maintained in NORMAL mode for electrode acquisition, preserving the capability to internally switch toward test signals for self-calibration routines.
+
+The suppression of electromagnetic interference, primarily 50/60 Hz mains noise, is managed through an active Driven Right Leg (DRL) topology. Unlike a passive ground reference, the ADS1299's \textit{Bias Drive} circuit monitors the common-mode voltage present at the detection electrodes. This signal is inverted, amplified, and reinjected into the patient's body through the reference electrode. This negative feedback loop actively cancels interference, raising the Common-Mode Rejection Ratio (CMRR) to levels exceeding $110$ dB, which is indispensable for unshielded clinical environments.
+
+Finally, signal integrity is ensured through rigorous power management. The AFE is powered by a dedicated Li-Po battery and regulated by a PMIC (Power Management Integrated Circuit). The analog power domain ($AVDD$) is isolated from digital rails via Low-Dropout Regulators (LDOs) with high Power Supply Rejection Ratio (PSRR). This strategy prevents high-frequency switching noise, inherent to CPU operation in the compute module, from capacitively coupling to the amplifier input stages.
+
+\section{The Digital Core: Heterogeneous Processing}
+\label{sec:digital_core}
+
+The digital architecture implements a shared responsibility model, distributing the computational load between a real-time microcontroller and an application microprocessor.
+
+The Real-Time Unit, based on the Texas Instruments TM4C1294 (ARM Cortex-M4F), acts as the acquisition system master. Operating on \textit{bare metal} or a lightweight real-time operating system, the TM4C guarantees deterministic behavior. Its primary function is to service the \texttt{DRDY} (Data Ready) hardware interrupt from the ADC immediately, ensuring lossless sample capture. Additionally, its Floating Point Unit (FPU) facilitates the application of in-situ digital pre-processing, such as notch filtering or scaling, without compromising interrupt service times. It is at this stage that the hardware \textit{timestamp} is assigned, achieving microsecond precision.
+
+Subsequently, data is transferred to the Compute Unit, constituted by a Raspberry Pi Compute Module 4 (CM4). This module runs a full operating system (Linux) and assumes high-level tasks: mass storage management, execution of the \textit{Lab Streaming Layer} (LSL) gateway, and telemetric transmission via Wi-Fi. The CM4 processes the continuous stream coming from the microcontroller, packaging it into standardized formats for consumption by the serious game software.
+
+Communication between both cores is established via a high-speed serial interface (UART $>921600$ baud or SPI). To guarantee patient safety and signal integrity, this digital link includes galvanic isolation (utilizing digital isolators such as the ISO77xx series). This prevents the formation of ground loops between the floating acquisition stage (battery) and any peripheral connected to the electrical grid. The communication protocol employs lightweight binary frames encapsulating the 24-bit data along with their timestamps, protected by a Cyclic Redundancy Check (CRC) to verify transmission integrity.
+
+
+\section{Event Synchronization Interface (USB-C)}
+\label{sec:event_interface}
+
+Synchronization with the stimulation platform (tablet) is physically performed through a USB Type-C port. This port, managed by the system's USB controller, allows for the reception of "event markers" generated by the game software at the precise instant of the stimulus. Given that the connection of commercial devices introduces significant electrical noise—a product of the tablet's internal DC-DC converters—the MONEEE system design incorporates total isolation of the USB bus. The data lines ($D+/D-$) traverse a specialized isolation integrated circuit (e.g., ADuM3160), effectively breaking galvanic continuity.
+
+To manage the transmission of these synchronization markers from the software side, the system utilizes \texttt{MoneLib}, a specialized library designed to bridge the Unity-based game environment with the embedded hardware. This library operates as a native Android plugin (\texttt{.aar}), enabling the game engine to communicate directly with the USB Host peripheral of the tablet. The software architecture requires an Android device running version 12 (Snow Cone) or higher with USB-C Host support to properly initialize the communication driver.
+
+The communication protocol is optimized for low latency, encoding game events—such as player interactions or system states—into lightweight hexadecimal values sent via USB. For instance, a player marking an "O" transmits the hexadecimal code \texttt{0x00}, while marking an "X" sends \texttt{0x01}, and a system restart triggers \texttt{0xFF}. To ensure signal integrity and prevent saturation of the USB channel, the protocol enforces a minimum safety interval of 1 millisecond between consecutive event transmissions.
+
+This integration allows the "Serious Game" to act as a precise stimulation trigger. When a user interacts with the game (e.g., touching a cell), the \texttt{MoneLibrary.SendUsbData} function is called immediately, dispatching the corresponding integer value to the microcontroller. This event is then captured by the embedded system's USB device peripheral and timestamped, ensuring that the cognitive task (the game) and the physiological recording (the EEG) remain temporally aligned for valid post-hoc analysis.
+
+\begin{figure}[ht]
+    \centering
+    \begin{tikzpicture}[
+        node distance=3.8cm, % Increased distance to prevent vertical overlapping
+        auto,
+        block/.style={
+            rectangle, 
+            draw=black, 
+            thick, 
+            fill=blue!5, 
+            text width=16em, % Widened to fit "Hardware Abstraction Layer" on one line
+            align=center, 
+            rounded corners, 
+            minimum height=4em
+        },
+        cloud/.style={
+            draw=black, 
+            thick, 
+            ellipse, 
+            fill=green!5, 
+            minimum height=3em,
+            text width=12em,
+            align=center
+        },
+        arrow/.style={
+            thick, 
+            ->, 
+            >=stealth
+        }
+    ]
+
+    % Nodes
+    \node [cloud] (user) {User Interaction \\ (Touch Event)};
+    
+    \node [block, below of=user, node distance=3cm] (unity) {
+        \textbf{Unity Game Engine} \\ 
+        \textit{C\# Script Layer} \\
+        \texttt{OnCellClick()}
+    };
+    
+    \node [block, below of=unity] (monelib) {
+        \textbf{MoneLib Middleware} \\ 
+        \textit{Android Native Plugin (.aar)} \\
+        \texttt{SendUsbData(sbyte)}
+    };
+    
+    \node [block, below of=monelib] (usb) {
+        \textbf{Android USB Host} \\ 
+        \textit{Hardware Abstraction Layer} \\
+        (USB-C Controller)
+    };
+    
+    \node [block, below of=usb, fill=orange!10, dashed] (mcu) {
+        \textbf{MONEEE MCU} \\ 
+        \textit{External Embedded System} \\
+        (Timestamp Generation)
+    };
+
+    % Edges and Labels (using xshift to separate left/right labels)
+    \draw [arrow] (user) -- node {Trigger} (unity);
+    
+    \draw [arrow] (unity) -- node[right, xshift=0.2cm] {Call Library} node[left, xshift=-0.2cm] {\texttt{0x00} / \texttt{0x01}} (monelib);
+    
+    \draw [arrow] (monelib) -- node {JNI Bridge} (usb);
+    
+    \draw [arrow] (usb) -- node[right, xshift=0.2cm] {Physical Trans.} node[left, xshift=-0.2cm] {USB D+/D-} (mcu);
+
+    % Protocol Legend Box
+    \node [draw=black, thin, align=left, right of=monelib, node distance=7.5cm, text width=4.5cm] (legend) {
+        \textbf{Protocol Map:} \\
+        \texttt{0x00}: Mark 'O' \\
+        \texttt{0x01}: Mark 'X' \\
+        \texttt{0xFF}: Restart \\
+        \textit{Interval:} $>1$ms
+    };
+    
+    \draw [dashed, gray] (monelib) -- (legend);
+
+    \end{tikzpicture}
+    \caption{Data flow diagram of the Event Synchronization Interface. The high-level interaction within Unity is transduced into a hexadecimal marker by the MoneLib middleware and transmitted via the USB isolation barrier to the MONEEE acquisition core.}
+    \label{fig:usb_sync_flow}
+\end{figure}
