@@ -68,4 +68,74 @@ To address the latency indeterminacy introduced by the USB stack and OS bufferin
 In this encoding scheme, the first byte acts as a binary Event Flag ($B_{0}$), explicitly indicating the presence of a synchronization trigger with a value of \texttt{1} or a resting state with \texttt{0}, while the second byte ($B_{1}$) designates the Event Type, carrying the specific code required to classify the nature of the stimulus (e.g., distinguishing between target and standard inputs). This metadata is immediately followed by the third byte ($B_{2}$), which serves as a static Start-of-Frame delimiter to identify the beginning of the physiological data payload. By packaging the event markers and the EEG signal within this same atomic transmission unit, the system transforms the synchronization problem into a data parsing task, ensuring that the relative phase relationship is preserved regardless of the jitter introduced by the USB communication or the operating system scheduler.
 
 % --- Place this immediately after the text about the frame structure ---
+% --- Place this immediately after the text about the frame structure ---
 
+\begin{figure}[ht]
+    \centering
+    % Define custom colors for clarity
+    \definecolor{moneeeSync}{RGB}{255, 100, 100} % Red-ish for sync events
+    \definecolor{moneeeSOF}{RGB}{255, 200, 0}   % Yellow-ish for Start of Frame
+    \definecolor{moneeeData}{RGB}{100, 200, 100} % Green-ish for payload
+
+    \begin{tikzpicture}[
+        font=\sffamily,
+        node distance = 0pt,
+        start chain = going right,
+        byte node/.style = {
+            rectangle,
+            draw=black!80,
+            thick,
+            minimum width=2.2cm,
+            minimum height=1.2cm,
+            outer sep=0pt,
+            align=center,
+            font=\ttfamily\bfseries
+        },
+        label node/.style = {
+            font=\footnotesize\sffamily,
+            align=center,
+            below=0.3cm
+        }
+    ]
+
+        % --- Draw the Bytes ---
+        % Byte 0: Event Flag
+        \node [byte node, on chain, fill=moneeeSync!30] (b0) {0x01};
+        % Byte 1: Event Type
+        \node [byte node, on chain, fill=moneeeSync!30] (b1) {Type ID};
+        % Byte 2: SOF Delimiter
+        \node [byte node, on chain, fill=moneeeSOF!30] (b2) {0xFE};
+        % Byte 3: Data High
+        \node [byte node, on chain, fill=moneeeData!30, right=0.5cm of b2] (d1) {CH1 High};
+        % Byte 4: Data Low
+        \node [byte node, on chain, fill=moneeeData!30] (d2) {CH1 Low};
+        % Continuation dots
+        \node [on chain, minimum width=1.5cm, align=center, font=\huge] (dots) {...};
+        % Last Byte example
+        \node [byte node, on chain, fill=moneeeData!30] (dn) {CHN Low};
+
+
+        % --- Add Labels below the bytes ---
+        \node [label node, below=of b0] {Byte $B_0$\\Event Flag\\(Active=1)};
+        \node [label node, below=of b1] {Byte $B_1$\\Event Type\\(Payload)};
+        \node [label node, below=of b2] {Byte $B_2$\\Start of Frame\\(Fixed Header)};
+        
+        % Group label for EEG data
+        \node [label node, below=of d1.south west] (dataLabelStart) {};
+        \node [label node, below=of dn.south east] (dataLabelEnd) {};
+        \draw [thick, decoration={brace, mirror, raise=0.3cm}, decorate] (d1.south west) -- (dn.south east) node [pos=0.5, below=0.6cm, font=\footnotesize\sffamily] {Physiological Data Payload (EEG Samples)};
+
+
+        % --- Grouping Backgrounds and Titles ---
+        \begin{scope}[on background layer]
+            % Sync Header Group
+            \node [draw=moneeeSync!80, thick, dashed, fit=(b0) (b2), inner ysep=15pt, inner xsep=5pt, rounded corners, label={[anchor=north, font=\footnotesize\bfseries, text=moneeeSync!80]north:Hardware Synchronization Header (3 Bytes)}] (syncHeader) {};
+        \end{scope}
+
+        % --- Transmission Flow Arrow ---
+        \draw [-{Latex[length=4mm, width=3mm]}, very thick, gray] ($(b0.west) + (-0.8, 1.5)$) -- node[above, font=\small\bfseries] {Transmission Direction (Serial Stream)} ($(dn.east) + (0.5, 1.5)$);
+
+    \end{tikzpicture}
+    \caption{Visual representation of the MONEEE serial data transmission frame. The initial three bytes ($B_0, B_1, B_2$) form a dedicated hardware synchronization prefix attached to every physiological sample, ensuring that event timing is locked to the data stream before USB transmission.}
+    \label{fig:moneee_frame_structure}
+\end{figure}
