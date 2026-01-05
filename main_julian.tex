@@ -30,8 +30,31 @@
 % More advance packages
 
 
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{forest}
+\usetikzlibrary{decorations.pathreplacing, calc, positioning}
+
+% Configuration for the "Brace" decoration
+\tikzset{
+    description/.style={
+        text width=5cm,
+        align=left,
+        font=\footnotesize\sffamily,
+        anchor=west,
+        xshift=0.2cm
+    },
+    mybrace/.style={
+        decorate,
+        decoration={brace, amplitude=5pt, mirror}, % Mirror makes it face right
+        thick,
+        draw=black
+    }
+}
+
+
 \usepackage{tikz}
-\usetikzlibrary{shapes, arrows.meta, positioning, chains, fit, backgrounds, patterns, babel}
+\usetikzlibrary{shapes, arrows.meta, positioning, chains, fit, backgrounds, patterns, babel, shadows}
 \usepackage{xcolor}
 
 
@@ -40,7 +63,7 @@
 \usepackage{listings}
 \usepackage{pgfplots}
 \pgfplotsset{compat=1.18}
-\usepackage{tikz}
+
 \usepgfplotslibrary{groupplots}
 \usepackage{longtable}
 \setlength{\LTcapwidth}{6in}
@@ -114,6 +137,11 @@
 \definecolor{darkorange25512714}{RGB}{255,127,14}
 \definecolor{forestgreen4416044}{RGB}{44,160,44}
 \definecolor{steelblue31119180}{RGB}{31,119,180}
+
+% Colors for state_of_art.tex mindmap
+\definecolor{softblue}{RGB}{100, 149, 237}
+\definecolor{hardred}{RGB}{205, 92, 92}
+\definecolor{predgreen}{RGB}{60, 179, 113}
 %%%%
 
 \newcommand{\Objectiveonename}{}
@@ -387,45 +415,45 @@ myedge/.style={->, -{Latex[#1]}}
 {\newpage
 \thispagestyle{empty}
 \begin{center}
-\begin{figure}
-\centering
-\epsfig{file=Figures/EscudoUN2016,scale=1}%
-\end{figure}
-\vspace{2.5cm}
-\textbf{\Huge \thesisname} \\ 
-\vspace{2.5cm}
-\textbf{\Large \studentname} \\
-\vspace{5.0cm}
-\small Universidad Nacional de Colombia \\
-\faculty \\
-\department \\
-\sede, Colombia\\
-\issuedate
-\newpage 
-\thispagestyle{empty}
-\vspace{2.5cm}
-\textbf{\Huge \thesisname} \\
-\vspace{2.5cm}
-\textbf{\Large \studentname} \\
-\vspace{2.5cm}
-\small Tesis presentada como requisito parcial para optar por el título de: \\
-{\bfseries \academictitle}\\
-\vspace{2.5cm}
-Director(a): \\
-\director \\
-% Codirector(a): \\
-% \codirector \\
-\vspace{2.5cm}
-Línea de investigación: \\ 
-\researchtopic\\
-Grupo de investigación: \\
-\resgroupone \\
-%\resgrouptwo \\
-\vspace{2.0cm} 
-Universidad Nacional de Colombia \\
-\faculty \\
-\department \\
-\issuedate
+  \begin{figure}
+    \centering
+    \epsfig{file=Figures/EscudoUN2016,scale=1}%
+  \end{figure}
+  \vspace{2.5cm}
+  \textbf{\Huge \thesisname} \\
+  \vspace{2.5cm}
+  \textbf{\Large \studentname} \\
+  \vspace{5.0cm}
+  \small Universidad Nacional de Colombia \\
+  \faculty \\
+  \department \\
+  \sede, Colombia\\
+  \issuedate
+  \newpage
+  \thispagestyle{empty}
+  \vspace{2.5cm}
+  \textbf{\Huge \thesisname} \\
+  \vspace{2.5cm}
+  \textbf{\Large \studentname} \\
+  \vspace{2.5cm}
+  \small Tesis presentada como requisito parcial para optar por el título de: \\
+  {\bfseries \academictitle}\\
+  \vspace{2.5cm}
+  Director(a): \\
+  \director \\
+  % Codirector(a): \\
+  % \codirector \\
+  \vspace{2.5cm}
+  Línea de investigación: \\
+  \researchtopic\\
+  Grupo de investigación: \\
+  \resgroupone \\
+  %\resgrouptwo \\
+  \vspace{2.0cm}
+  Universidad Nacional de Colombia \\
+  \faculty \\
+  \department \\
+  \issuedate
 \end{center}
 
 % Dedicatorias
@@ -462,7 +490,7 @@ Universidad Nacional de Colombia \\
 }
 %\begingroup
 %\pagenumbering{roman}
-       % Abbreviations
+% Abbreviations
 %\printglossary[type=\acronymtype, title=Abbreviations]
 %\glsresetall
 %\cleardoublepage
@@ -470,7 +498,7 @@ Universidad Nacional de Colombia \\
 
 {\pagestyle{plain} \pagenumbering{roman}
 \setlength{\parskip}{1mm}
-\include{Agradecimientos}   
+\include{Agradecimientos}
 \include{abreviaciones}
 \begingroup
 %\pagenumbering{roman}
@@ -481,9 +509,9 @@ Universidad Nacional de Colombia \\
 \include{abstract}
 \listoffigures
 \addcontentsline{toc}{chapter}{List of figures}
-\listoftables 
+\listoftables
 \addcontentsline{toc}{chapter}{List of tables}
-\tableofcontents 
+\tableofcontents
 \addcontentsline{toc}{chapter}{Content}
 \clearpage
 }
@@ -496,8 +524,8 @@ Universidad Nacional de Colombia \\
 \include{Cap_1/Outline_and_contributions}
 \include{Cap_1/preliminaries}
 \include{Cap_1/problem_statement}
-\include{Cap_1/objetivos}
 \include{Cap_1/state_of_art}
+\include{Cap_1/objetivos}
 \include{Cap_2/Theoretical_Framework}
 \include{Cap_3/Hardware_Architecture}
 \include{Cap_4/Firmware_Synchronization}

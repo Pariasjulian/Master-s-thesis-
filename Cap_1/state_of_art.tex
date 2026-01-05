@@ -1,42 +1,42 @@
 \section{State of art}\label{sec:stateofart}
 
 
-In recent years, numerous wireless systems for EEG data acquisition have been developed, with two main approaches standing out: conventional remote monitoring systems and portable smart systems. The former simply digitize the EEG signals and transmit them to a remote unit for processing, usually in a deferred manner \cite{arpaia2020wearable}. On the other hand, portable systems preprocess the signals on a local device, such as a microcontroller (MCU), and wirelessly transmit the data using low-power consumption protocols. \ref{table:bci_hardware} This latter approach is crucial for real-time applications, where low latency is essential.
+% In recent years, numerous wireless systems for EEG data acquisition have been developed, with two main approaches standing out: conventional remote monitoring systems and portable smart systems. The former simply digitize the EEG signals and transmit them to a remote unit for processing, usually in a deferred manner \cite{arpaia2020wearable}. On the other hand, portable systems preprocess the signals on a local device, such as a microcontroller (MCU), and wirelessly transmit the data using low-power consumption protocols. \ref{table:bci_hardware} This latter approach is crucial for real-time applications, where low latency is essential.
 
-Marker synchronization in portable EEG acquisition systems \cite{razavi2022opensync}, particularly in applications combined with serious games \cite{damavsevivcius2023serious}, faces several technical and operational challenges. One of the main issues lies in latency in data transmission protocols. In portable EEG systems, precise synchronization between brain events and interactions in the game is crucial \cite{gomezromero2024implications}, but inherent limitations of portable acquisition systems, such as latencies in data transfer protocols, can cause temporal mismatches. These latencies primarily stem from bandwidth constraints in wireless transmission and the need to process large volumes of data in real-time \cite{he2023diversity}.
+% Marker synchronization in portable EEG acquisition systems \cite{razavi2022opensync}, particularly in applications combined with serious games \cite{damavsevivcius2023serious}, faces several technical and operational challenges. One of the main issues lies in latency in data transmission protocols. In portable EEG systems, precise synchronization between brain events and interactions in the game is crucial \cite{gomezromero2024implications}, but inherent limitations of portable acquisition systems, such as latencies in data transfer protocols, can cause temporal mismatches. These latencies primarily stem from bandwidth constraints in wireless transmission and the need to process large volumes of data in real-time \cite{he2023diversity}.
 
-The type of electrode \cite{liu2023feature} and the number of channels \cite{abdullah2022eeg}  are determining factors in the quality of the data acquired in portable systems. Although dry electrodes offer greater portability, they tend to generate lower-quality signals due to reduced conductivity, which can complicate precise synchronization with other devices, such as serious games. On the other hand, the use of systems with \textbf{low channel density (e.g., 8-16 channels)} \cite{allouch2023effect} is a common strategy in these portable systems to minimize size and improve portability. However, low channel density can affect the spatial resolution of EEG data, limiting the ability to perform accurate analysis of brain patterns. This challenge is reflected in the need to optimize sampling \cite{zheng2023effects}  and data transfer protocols \cite{bayilmics2022survey}  to ensure that captured signals are transmitted efficiently without significant information loss
+% The type of electrode \cite{liu2023feature} and the number of channels \cite{abdullah2022eeg}  are determining factors in the quality of the data acquired in portable systems. Although dry electrodes offer greater portability, they tend to generate lower-quality signals due to reduced conductivity, which can complicate precise synchronization with other devices, such as serious games. On the other hand, the use of systems with \textbf{low channel density (e.g., 8-16 channels)} \cite{allouch2023effect} is a common strategy in these portable systems to minimize size and improve portability. However, low channel density can affect the spatial resolution of EEG data, limiting the ability to perform accurate analysis of brain patterns. This challenge is reflected in the need to optimize sampling \cite{zheng2023effects}  and data transfer protocols \cite{bayilmics2022survey}  to ensure that captured signals are transmitted efficiently without significant information loss
 
-The sampling rate is another critical factor, as it directly affects the temporal resolution of EEG signals. The combination of low channel density and insufficient sampling rate can make it difficult to capture fast brain events, such as attention shifts, which are essential in applications like serious games. Furthermore, Signal Front-End Amplifiers (AFE) \cite{devi2022survey} play a key role in signal quality. While low-cost AFEs may be suitable for portable systems, they tend to have limitations in processing capacity, which impacts data synchronization by generating noise and distortions in the EEG signals, especially when connected to mobile devices with lower processing power.
+% The sampling rate is another critical factor, as it directly affects the temporal resolution of EEG signals. The combination of low channel density and insufficient sampling rate can make it difficult to capture fast brain events, such as attention shifts, which are essential in applications like serious games. Furthermore, Signal Front-End Amplifiers (AFE) \cite{devi2022survey} play a key role in signal quality. While low-cost AFEs may be suitable for portable systems, they tend to have limitations in processing capacity, which impacts data synchronization by generating noise and distortions in the EEG signals, especially when connected to mobile devices with lower processing power.
 
-Battery life \cite{niso2023wireless} is a significant constraint for portable systems that require long monitoring sessions. EEG systems that operate for several hours often need to optimize their energy consumption, which may involve reducing the sampling rate or channel density, once again impacting data quality and real-time synchronization.
-
-
-\begin{table}[H]
-    \caption{Acquisition devices used for BCI. The table provides an overview of the different hardware devices, their specifications, and communication protocols.}
-    \label{table:bci_hardware}
-    \centering
-    \footnotesize
-    \begin{tabularx}{\textwidth}{|X|p{1.8cm}|p{1.8cm}|c|>{\centering\arraybackslash}X|c|X|c|}
-        \hline
-        \textbf{Hardware BCI} & \textbf{Empresa} & \textbf{Tipo de Electrodo} & \textbf{Canales} & \textbf{Frecuencia de Muestreo} & \textbf{AFE} & \textbf{Protocolo y Transferencia} & \textbf{Batería} \\ \hline
-        Cyton + Daisy \cite{OpenBCI_CytonDaisy} & OpenBCI & Flexible / Húmedo / Seco & 16 & 250 Hz - 16 kHz & ADS1299 & RF / BLE / Wi-Fi & 8 h \\ \hline
-        actiCAP \cite{BrainProducts_ActiCap} & Brain Products GmbH & Flexible / Húmedo / Seco & 16 & 256 Hz - 16 kHz & - & USB & 16 h \\ \hline
-        EPOC X \cite{Emotiv_EPOCX} & Emotiv & Rígido / Húmedo & 14 & 128 Hz & - & BLE / Bluetooth & 6--12 h \\ \hline
-        Diadem \cite{Bitbrain_Diadem} & Bitbrain & Rígido / Seco & 12 & 256 Hz & - & Bluetooth & 8 h \\ \hline
-        g.Nautilus \cite{Gtec_GNautilusProFlexible} & g.tec & Flexible & 8 / 16 / 32 & 250 Hz & ADS1299 & Propietario & 10 h \\ \hline
-        Plataforma para EEG ambulatorio \cite{pinho2014wireless} & - & Activo / Seco & 32 & 250 Hz- -1 kHz & ADS1299 & Wi-Fi 802.11 b/g/n & 26 h \\ \hline
-        Sistema para neurofeedback \cite{Totev2023} & - & Pasivo / Seco & 40 & 250 Hz & ADS1298 & RF & - \\ \hline
-        BEATS \cite{Beats} & - & Flexible / Húmedo & 32 & 4 kHz & ADS1299 & Wi-Fi & 24 h (cableado) \\ \hline
-    \end{tabularx}
-\end{table}
+% Battery life \cite{niso2023wireless} is a significant constraint for portable systems that require long monitoring sessions. EEG systems that operate for several hours often need to optimize their energy consumption, which may involve reducing the sampling rate or channel density, once again impacting data quality and real-time synchronization.
 
 
+% \begin{table}[H]
+%     \caption{Acquisition devices used for BCI. The table provides an overview of the different hardware devices, their specifications, and communication protocols.}
+%     \label{table:bci_hardware}
+%     \centering
+%     \footnotesize
+%     \begin{tabularx}{\textwidth}{|X|p{1.8cm}|p{1.8cm}|c|>{\centering\arraybackslash}X|c|X|c|}
+%         \hline
+%         \textbf{Hardware BCI} & \textbf{Empresa} & \textbf{Tipo de Electrodo} & \textbf{Canales} & \textbf{Frecuencia de Muestreo} & \textbf{AFE} & \textbf{Protocolo y Transferencia} & \textbf{Batería} \\ \hline
+%         Cyton + Daisy \cite{OpenBCI_CytonDaisy} & OpenBCI & Flexible / Húmedo / Seco & 16 & 250 Hz - 16 kHz & ADS1299 & RF / BLE / Wi-Fi & 8 h \\ \hline
+%         actiCAP \cite{BrainProducts_ActiCap} & Brain Products GmbH & Flexible / Húmedo / Seco & 16 & 256 Hz - 16 kHz & - & USB & 16 h \\ \hline
+%         EPOC X \cite{Emotiv_EPOCX} & Emotiv & Rígido / Húmedo & 14 & 128 Hz & - & BLE / Bluetooth & 6--12 h \\ \hline
+%         Diadem \cite{Bitbrain_Diadem} & Bitbrain & Rígido / Seco & 12 & 256 Hz & - & Bluetooth & 8 h \\ \hline
+%         g.Nautilus \cite{Gtec_GNautilusProFlexible} & g.tec & Flexible & 8 / 16 / 32 & 250 Hz & ADS1299 & Propietario & 10 h \\ \hline
+%         Plataforma para EEG ambulatorio \cite{pinho2014wireless} & - & Activo / Seco & 32 & 250 Hz- -1 kHz & ADS1299 & Wi-Fi 802.11 b/g/n & 26 h \\ \hline
+%         Sistema para neurofeedback \cite{Totev2023} & - & Pasivo / Seco & 40 & 250 Hz & ADS1298 & RF & - \\ \hline
+%         BEATS \cite{Beats} & - & Flexible / Húmedo & 32 & 4 kHz & ADS1299 & Wi-Fi & 24 h (cableado) \\ \hline
+%     \end{tabularx}
+% \end{table}
 
 
-In the field of brain-computer interfaces (BCIs), several devices have been developed, each with unique features tailored to specific use cases such as clinical research, neurofeedback, or consumer applications. The Cyton + Daisy system by OpenBCI \cite{OpenBCI_CytonDaisy} supports up to 16 channels and offers a wide sampling rate range of 250 Hz to 16 kHz, making it suitable for high-resolution EEG acquisition. The device uses flexible, wet, or dry electrodes and incorporates the ADS1299 AFE for high-quality signal conversion. It supports data transfer via RF, Bluetooth Low Energy (BLE), and Wi-Fi, allowing for versatile connectivity. With a battery life of 8 hours, this system is highly adaptable, suitable for both research and practical applications in various environments. Another system, actiCAP \cite{BrainProducts_ActiCap} by Brain Products GmbH, features flexible, wet, or dry electrodes and is capable of recording up to 16 channels with a sampling rate range from 256 Hz to 16 kHz. The actiCAP does not use a dedicated AFE and instead relies on a USB protocol for data transfer. The device provides a robust 16-hour battery life, making it an ideal choice for long-duration experiments and clinical settings that require stable signal acquisition over extended periods. The EPOC X \cite{Emotiv_EPOCX} by Emotiv is a more compact and consumer-oriented BCI device that uses rigid, wet electrodes and supports 14 channels with a sampling rate of 128 Hz. This device employs Bluetooth Low Energy (BLE) for wireless data transfer, and its battery life ranges from 6 to 12 hours, depending on usage. While its lower sampling rate may limit its use for high-resolution research, the EPOC X remains a popular choice for applications in neurofeedback, cognitive training, and general user interaction. The Diadem \cite{Bitbrain_Diadem} system by Bitbrain uses rigid, dry electrodes and supports 12 channels with a sampling rate of 256 Hz. It operates via Bluetooth for data transmission and has a battery life of 8 hours, providing a balance between portability and signal quality. The g.Nautilus \cite{Gtec_GNautilusProFlexible} system by g.tec offers great flexibility, supporting configurations with 8, 16, or 32 channels. It operates at a sampling rate of 250 Hz and uses the ADS1299 AFE for high-performance signal acquisition. The system is known for its proprietary data transmission protocol, ensuring reliable connectivity, and its battery lasts up to 10 hours, making it suitable for long-term monitoring and research studies. The BCI system used by \cite{pinho2014wireless} employs active, dry electrodes and supports up to 32 channels with a sampling rate range of 250 Hz to 1 kHz. It also incorporates the ADS1299 AFE for analog-to-digital conversion, ensuring high fidelity in signal capture. Data is transferred via Wi-Fi 802.11 b/g/n, enabling flexible and high-speed communication with external devices. The system boasts an impressive 26-hour battery life, making it an excellent option for extended usage in field studies or clinical applications. The BCI system described by \cite{Totev2023} uses passive, dry electrodes and supports up to 40 channels with a sampling rate of 250 Hz. It incorporates the ADS1298 AFE for high-quality data acquisition and utilizes RF (Radio Frequency) for data transfer. While battery life details are not specified, this device is likely designed for portable, research-focused applications where wireless data transfer is essential for real-time monitoring. Finally, the \cite{Beats} system features 32 flexible, wet electrodes and uses the ADS1299 AFE for high-precision EEG signal acquisition at a sampling rate of 4 kHz. Data is transmitted wirelessly via Wi-Fi, allowing for real-time data monitoring and analysis. The system’s battery life is 24 hours when wired, providing extended operation for intensive studies or clinical assessments that require continuous monitoring.
 
-Each of these devices represents a different approach to EEG signal acquisition, offering varying numbers of channels, electrode types, sampling rates, and battery life. While some are optimized for research and clinical use with high sampling rates and extended battery life, others are more suited to consumer applications with lower sampling rates and shorter operational times. The choice of device depends largely on the specific needs of the user, whether for research, clinical monitoring, or personal use in neurofeedback and cognitive training applications.
+
+% In the field of brain-computer interfaces (BCIs), several devices have been developed, each with unique features tailored to specific use cases such as clinical research, neurofeedback, or consumer applications. The Cyton + Daisy system by OpenBCI \cite{OpenBCI_CytonDaisy} supports up to 16 channels and offers a wide sampling rate range of 250 Hz to 16 kHz, making it suitable for high-resolution EEG acquisition. The device uses flexible, wet, or dry electrodes and incorporates the ADS1299 AFE for high-quality signal conversion. It supports data transfer via RF, Bluetooth Low Energy (BLE), and Wi-Fi, allowing for versatile connectivity. With a battery life of 8 hours, this system is highly adaptable, suitable for both research and practical applications in various environments. Another system, actiCAP \cite{BrainProducts_ActiCap} by Brain Products GmbH, features flexible, wet, or dry electrodes and is capable of recording up to 16 channels with a sampling rate range from 256 Hz to 16 kHz. The actiCAP does not use a dedicated AFE and instead relies on a USB protocol for data transfer. The device provides a robust 16-hour battery life, making it an ideal choice for long-duration experiments and clinical settings that require stable signal acquisition over extended periods. The EPOC X \cite{Emotiv_EPOCX} by Emotiv is a more compact and consumer-oriented BCI device that uses rigid, wet electrodes and supports 14 channels with a sampling rate of 128 Hz. This device employs Bluetooth Low Energy (BLE) for wireless data transfer, and its battery life ranges from 6 to 12 hours, depending on usage. While its lower sampling rate may limit its use for high-resolution research, the EPOC X remains a popular choice for applications in neurofeedback, cognitive training, and general user interaction. The Diadem \cite{Bitbrain_Diadem} system by Bitbrain uses rigid, dry electrodes and supports 12 channels with a sampling rate of 256 Hz. It operates via Bluetooth for data transmission and has a battery life of 8 hours, providing a balance between portability and signal quality. The g.Nautilus \cite{Gtec_GNautilusProFlexible} system by g.tec offers great flexibility, supporting configurations with 8, 16, or 32 channels. It operates at a sampling rate of 250 Hz and uses the ADS1299 AFE for high-performance signal acquisition. The system is known for its proprietary data transmission protocol, ensuring reliable connectivity, and its battery lasts up to 10 hours, making it suitable for long-term monitoring and research studies. The BCI system used by \cite{pinho2014wireless} employs active, dry electrodes and supports up to 32 channels with a sampling rate range of 250 Hz to 1 kHz. It also incorporates the ADS1299 AFE for analog-to-digital conversion, ensuring high fidelity in signal capture. Data is transferred via Wi-Fi 802.11 b/g/n, enabling flexible and high-speed communication with external devices. The system boasts an impressive 26-hour battery life, making it an excellent option for extended usage in field studies or clinical applications. The BCI system described by \cite{Totev2023} uses passive, dry electrodes and supports up to 40 channels with a sampling rate of 250 Hz. It incorporates the ADS1298 AFE for high-quality data acquisition and utilizes RF (Radio Frequency) for data transfer. While battery life details are not specified, this device is likely designed for portable, research-focused applications where wireless data transfer is essential for real-time monitoring. Finally, the \cite{Beats} system features 32 flexible, wet electrodes and uses the ADS1299 AFE for high-precision EEG signal acquisition at a sampling rate of 4 kHz. Data is transmitted wirelessly via Wi-Fi, allowing for real-time data monitoring and analysis. The system’s battery life is 24 hours when wired, providing extended operation for intensive studies or clinical assessments that require continuous monitoring.
+
+% Each of these devices represents a different approach to EEG signal acquisition, offering varying numbers of channels, electrode types, sampling rates, and battery life. While some are optimized for research and clinical use with high sampling rates and extended battery life, others are more suited to consumer applications with lower sampling rates and shorter operational times. The choice of device depends largely on the specific needs of the user, whether for research, clinical monitoring, or personal use in neurofeedback and cognitive training applications.
 
 
 
@@ -44,3 +44,140 @@ Each of these devices represents a different approach to EEG signal acquisition,
 %\subsection{Evolution of Portable High-Fidelity EEG Architectures}
 
 %\subsection{Synchronization Paradigms: The "Jitter" Problem in Neurogaming}
+
+
+Unpredictable Latency and Jitter Between Game Events and EEG Recordings
+
+The integration of electroencephalography (EEG) into serious games necessitates a departure from the deterministic timing of traditional psychophysics toward architectures capable of managing the stochastic nature of modern game engines and wireless transmission. In the literature from 2022 to 2026, the resolution of unpredictable latency and jitter has coalesced around a progression of engineering philosophies, moving from software-defined abstraction to hardware-grounded validation, and finally to predictive algorithmic compensation.The dominant engineering philosophy in recent years has been the abstraction of hardware timing differences through Network-Layer Middleware, with the Lab Streaming Layer (LSL) cementing its status as the de facto standard for multimodal synchronization. In their seminal 2024 reference paper, Kothe et al. validated the LSL ecosystem's ability to achieve sub-millisecond accuracy by employing a distributed clock discovery protocol similar to NTP, which continuously estimates offsets and drifts between source and recording clocks [1], [2]. This software-centric approach has been pivotal for enabling "zero-configuration" resilience in complex setups, allowing disparate devices to synchronize without shared hardware triggers [2]. For instance, Larsen et al. (2024) applied this framework to the notoriously difficult task of synchronizing EEG with VR-integrated eye-tracking, quantifying a stable hardware offset of 36 ms but noting a persistent stochastic jitter of 5.76 ms inherent to the buffering of consumer-grade peripherals [3], [4]. To mitigate the specific latencies introduced by game engines like Unity, Niehorster et al. (2024) developed "TittaLSL," a plugin that decouples data transmission from the rendering loop; this allows for end-to-end latencies as low as 3.05 ms, preventing graphical frame drops from corrupting the time-series integrity of the biosignals [5]. This philosophy of software abstraction is further exemplified by the BrainForm system (2025), which leverages LSL to scale gamified BCI data collection to consumer hardware, accepting minor precision trade-offs in exchange for massive ecological validity and ease of deployment [6].However, a counter-philosophy emphasizes Hardware-Ground Truth, arguing that software timestamps are insufficient for clinical-grade validity due to the "motion-to-photon" latency of display drivers. Ignatious et al. (2023) formalized this rigorous approach with the "Computation of Latencies in Event-related potential Triggers" (CLET) method, which mandates the use of photodiodes to physically measure the arrival of photons [7]. Their comparative analysis revealed counter-intuitive findings: modern VR headsets often exhibit lower latencies (approx. 82 ms) than standard LED monitors (approx. 122 ms) due to aggressive low-persistence driver optimizations, yet the variance remains high enough to smear high-frequency ERP components [8], [8]. This necessity for hardware validation was statistically reinforced by Miziara et al. (2025), who compared three synchronization paradigms for TMS-EEG. They demonstrated that direct hardware routing (Paradigm 3) yields a relative timing error of ~0.1\%, drastically outperforming the ~0.8\% error of software-parallel methods, effectively proving that software middleware introduces a non-negligible noise floor [9], [9], [10]. Consequently, solutions like the TriggerBox and Chronos adapters remain critical for researchers requiring absolute temporal precision, serving as a bridge between the digital game state and the analog amplifier [11], [12]. Furthermore, Roy et al. (2024) extended this hardware rigor to networked environments, utilizing custom synchronization protocols to align dry-electrode EEG with vehicle telemetry in multi-participant driving simulators, ensuring that "collective neurophysiology" is aligned despite network variance [13].The third and most emergent philosophy treats latency not as a fixed error to be measured, but as a dynamic variable to be managed via Predictive and Compensatory Algorithms. This approach borrows heavily from edge computing and cloud gaming. Kim et al. (2025) introduced the ARMA system, which guarantees latency Service Level Objectives (SLOs) in mobile edge computing by dynamically adjusting the complexity of Deep Neural Networks (DNNs) based on real-time network conditions; effectively, the system trades classification complexity for speed when jitter spikes, maintaining the real-time feedback loop required for serious games [14], [14]. Similarly, Microsoft researchers proposed "Ekho" (2023), a system that embeds inaudible pseudo-noise sequences into game audio to measure and compensate for inter-stream delays in real-time, achieving sub-10ms synchronization across disparate devices [15], . On the neurophysiological side, Zrenner et al. (2025) advanced "Bayesian Temporal Prediction" (BTP), which predicts the phase of ongoing neural oscillations to deliver stimuli with "negative latency"—initiating the rendering pipeline milliseconds *before* the brain enters the desired state `[16]`. Additionally, Zhang et al. (2024) proposed offline stepwise latency correction algorithms that iteratively align single-trial EEG data post-hoc, effectively "de-jittering" the signal mathematically to recover sharp ERP features even from noisy recording environments `[17]`. Finally, Liu et al. (2025) developed the CLAAP model for cloud gaming, which uses time-series forecasting to predict latency spikes before they occur, allowing the game engine to preemptively adjust its state, a technique highly applicable to remote BCI assessments.
+
+\begin{center}
+  \resizebox{\textwidth}{!}{%
+    \begin{forest}
+      % Tree Configuration
+      for tree={
+      grow'=0,               % Grow to the right
+      parent anchor=east,    % Edges start from east
+      child anchor=west,     % Edges end at west
+      anchor=west,           % Align text to the left
+      calign=center,         % Center alignment
+      edge path={
+          \noexpand\path[\forestoption{edge}]
+          (!u.parent anchor) -- +(10pt,0) |- (.child anchor)\forestoption{edge label};
+        },
+      font=\sffamily,
+      l sep=1cm,             % Horizontal separation
+      s sep=0.6cm,           % Vertical separation
+      }
+      % ----------------------------------------------------------
+      % TREE CONTENT
+      % ----------------------------------------------------------
+      [\textbf{\Large Unpredictable Latency} \\ \textbf{\Large \& Jitter}, align=center
+      [{\textbf{Software Middleware} \\ (Abstraction)}, align=center
+      [\textbullet\ LSL Ecosystem (Kothe et al.) \\
+      \textbullet\ TittaLSL Plugin (Niehorster et al.) \\
+      \textbullet\ BrainForm System,
+      align=left, name=softlist]
+      ]
+      [{\textbf{Hardware Ground Truth} \\ (Validation)}, align=center
+      [\textbullet\ Photodiodes \& CLET \\
+      \textbullet\ TriggerBox \& Chronos \\
+      \textbullet\ Direct Routing (Miziara et al.),
+      align=left, name=hardlist]
+      ]
+      [{\textbf{Predictive Algorithms} \\ (Compensation)}, align=center
+      [\textbullet\ Edge Computing (ARMA) \\
+      \textbullet\ Audio Pseudo-noise (Ekho) \\
+      \textbullet\ Neuro-Prediction (Zrenner et al.),
+      align=left, name=predlist]
+      ]
+      ]
+      % ----------------------------------------------------------
+      % ANNOTATIONS (Curly Braces)
+      % ----------------------------------------------------------
+      % Draw braces relative to the named nodes
+      \node[description] at (softlist.east) (softdesc) {
+        (+) Easy deployment \\
+        (-) Stochastic jitter ($\approx$ 5ms)
+      };
+      \draw[mybrace] (softlist.north east) -- (softlist.south east);
+      \node[description] at (hardlist.east) (harddesc) {
+        (+) High precision (0.1\% error) \\
+        (-) Complex setup \& cabling
+      };
+      \draw[mybrace] (hardlist.north east) -- (hardlist.south east);
+      \node[description] at (predlist.east) (preddesc) {
+        (+) Real-time compensation \\
+        (+) Handles dynamic lag
+      };
+      \draw[mybrace] (predlist.north east) -- (predlist.south east);
+    \end{forest}%
+  }
+\end{center}
+
+Resource and Power Constraints in Embedded EEG Platforms
+
+As the MONEEE system targets mobile usage, the engineering challenge shifts to maximizing signal fidelity within the stringent power envelopes of wearable devices. The literature from 2022–2026 addresses this through three synergistic philosophies: reducing data volume via Compressive Sensing, processing data at the edge via TinyML, and optimizing the physical layer via Low-Power ASIC Design.The philosophy of Compressive Sensing (CS) challenges the Nyquist-Shannon theorem, positing that EEG signals can be reconstructed from sparse samples to drastically reduce transmission energy—the primary consumer of battery life in wireless nodes [18]. The state-of-the-art has evolved from simple linear reconstruction to "Deep Compressed Sensing" (CS-EEG). Zhang et al. (2024) demonstrated that integrating CNN-LSTM networks into the reconstruction pipeline allows for compression ratios of up to 70\% while maintaining a Percentage Root-mean-square Difference (PRD) of less than 7\% [19], [20], [21]. This approach offloads the heavy computational reconstruction to the server, keeping the wearable sensor simple. Yamada et al. (2025) implemented these principles in a wireless EEG transmission system that consumes a mere 72 µW, orders of magnitude lower than standard Bluetooth protocols [22], [22]. Further refinement comes from Zhu et al. (2025), who introduced "Non-local Low-Rank and Cosparse Priors" (NLRC); this technique exploits the high inter-channel correlation of high-density EEG arrays to enhance reconstruction quality without increasing the sampling rate, effectively allowing for denser sensor grids on limited power budgets [23], [23]. Reviews by Damoah and Liang (2024) and Salami et al. (2025) further categorize these methods, highlighting that while lossless methods like ECoT ensure integrity, hybrid lossy methods are essential for the high-bandwidth demands of serious gaming [24], [25].Complementing transmission reduction is the TinyML philosophy: "transmit insights, not data." By processing bio-markers directly on the microcontroller (MCU), these systems eliminate the bandwidth cost of raw data streaming. Tsanika et al. (2025) and Lemoine et al. (2025) have pioneered the deployment of complex seizure detection algorithms on resource-constrained ARM Cortex-M and STM32 chips using quantization techniques [26], [27], [28]. By converting 32-bit floating-point weights to 8-bit integers (INT8), they achieved model size reductions of over 50\% (down to ~23KB) with negligible loss in accuracy (maintaining >98\% sensitivity) [29]. To automate the design of these efficient networks, researchers at KAUST (2024) applied "Neural Architecture Search" (NAS) specifically for EEG, generating models that fit within kilobytes of SRAM while optimizing for inference latency [30], [30]. This edge-intelligence capability is realized in systems like "CognitiveArm" (2025), a prosthetic control interface that runs deep learning motor imagery classification entirely on embedded hardware [31], [31], and STM32-based emotion recognition systems that adapt game mechanics in real-time based on the user's affective state [32]. Comprehensive surveys by the IEEE Internet of Things Journal (2025) confirm that TinyML is shifting the paradigm from cloud-dependent BCI to "self-contained" neuro-wearables [33], [34].Finally, the foundational Low-Power ASIC philosophy focuses on optimizing the analog front-end (AFE) to reduce the baseline power consumption of signal acquisition. Watcharapongvinit et al. (2023) presented a ground-free AFE design consuming only 6.55 µW per channel while maintaining robust noise rejection, critical for ambulatory settings where motion artifacts are prevalent [35], [36]. Liu et al. (2025) pushed these limits further with a gain-configurable readout circuit achieving an input-referred noise floor of just 0.42 µVpp, ensuring that low-power operation does not compromise the detection of subtle neurocognitive components [37], [37]. Innovators like CSEM have also introduced "cooperative sensor" architectures, where active electrodes are connected via a single unshielded bus, reducing the weight and complexity of the headset cabling [38]. Furthermore, the shift toward "Event-Driven" processing is gaining traction; Xie et al. (2023) and other groups have developed hybrid processors that utilize Spiking Neural Networks (SNNs) or Level-Crossing ADCs (LCADC) to process signals only when significant voltage changes occur, mimicking the brain's own energy-efficient sparsity , . Recent work by Zheng et al. (2024) on Ear-EEG AFEs demonstrates that these low-power techniques can be miniaturized into hearable form factors, opening new avenues for unobtrusive serious gaming interfaces [39], [39]. Nguyen et al. (2025) also demonstrated a low-power sonification algorithm on MCU, proving that complex real-time feedback is possible within a 12mW envelope [40].
+
+\begin{center}
+  \resizebox{\textwidth}{!}{%
+    \begin{forest}
+      % Tree Configuration
+      for tree={
+      grow'=0,               % Grow to the right
+      parent anchor=east,    % Edges start from east
+      child anchor=west,     % Edges end at west
+      anchor=west,           % Align text to the left
+      calign=center,         % Center alignment
+      edge path={
+          \noexpand\path[\forestoption{edge}]
+          (!u.parent anchor) -- +(10pt,0) |- (.child anchor)\forestoption{edge label};
+        },
+      font=\sffamily,
+      l sep=1cm,             % Horizontal separation
+      s sep=0.6cm,           % Vertical separation
+      }
+      % ----------------------------------------------------------
+      % TREE CONTENT
+      % ----------------------------------------------------------
+      [\textbf{\Large Resource \& Power} \\ \textbf{\Large Constraints}, align=center
+      [{\textbf{Compressive Sensing} \\ (Transmission)}, align=center
+      [\textbullet\ Deep CS (CNN-LSTM) \\
+      \textbullet\ Ultra-Low Power Wireless \\
+      \textbullet\ NLRC (Correlations),
+      align=left, name=cslist]
+      ]
+      [{\textbf{TinyML Edge AI} \\ (Processing)}, align=center
+      [\textbullet\ Quantization (INT8) \\
+      \textbullet\ Neural Arch. Search (NAS) \\
+      \textbullet\ Self-Contained Systems,
+      align=left, name=tinylist]
+      ]
+      [{\textbf{Low-Power ASIC} \\ (Physical Layer)}, align=center
+      [\textbullet\ Ground-Free AFE \\
+      \textbullet\ Noise Optimization \\
+      \textbullet\ Event-Driven (SNN),
+      align=left, name=asiclist]
+      ]
+      ]
+      % ----------------------------------------------------------
+      % ANNOTATIONS (Curly Braces)
+      % ----------------------------------------------------------
+      % Draw braces relative to the named nodes
+      \node[description] at (cslist.east) (csdesc) {
+        (+) 70\% Compression Ratio \\
+        (+) 72 $\mu$W Consumption
+      };
+      \draw[mybrace] (cslist.north east) -- (cslist.south east);
+      \node[description] at (tinylist.east) (tinydesc) {
+        (+) Transmit insights, not data \\
+        (+) 50\% Size Reduction
+      };
+      \draw[mybrace] (tinylist.north east) -- (tinylist.south east);
+      \node[description] at (asiclist.east) (asicdesc) {
+        (+) 6.55 $\mu$W per channel \\
+        (+) High Noise Rejection
+      };
+      \draw[mybrace] (asiclist.north east) -- (asiclist.south east);
+    \end{forest}%
+  }
+\end{center}
