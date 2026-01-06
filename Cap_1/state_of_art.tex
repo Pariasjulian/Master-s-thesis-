@@ -39,18 +39,12 @@ In the field of brain-computer interfaces (BCIs), several devices have been deve
 Each of these devices represents a different approach to EEG signal acquisition, offering varying numbers of channels, electrode types, sampling rates, and battery life. While some are optimized for research and clinical use with high sampling rates and extended battery life, others are more suited to consumer applications with lower sampling rates and shorter operational times. The choice of device depends largely on the specific needs of the user, whether for research, clinical monitoring, or personal use in neurofeedback and cognitive training applications.
 
 
-
-
-%\subsection{Evolution of Portable High-Fidelity EEG Architectures}
-
-%\subsection{Synchronization Paradigms: The "Jitter" Problem in Neurogaming}
-
-
 \subsection{Unpredictable Latency and Jitter Between Game Events and EEG Recordings}
 
-The integration of electroencephalography (EEG) into serious games necessitates a departure from the deterministic timing of traditional psychophysics toward architectures capable of managing the stochastic nature of modern game engines and wireless transmission. In the last years, the resolution of unpredictable latency and jitter has coalesced around a progression of engineering philosophies, moving from software-defined abstraction to hardware-grounded validation, and finally to predictive algorithmic compensation.The dominant engineering philosophy in recent years has been the abstraction of hardware timing differences through Network-Layer Middleware, with the Lab Streaming Layer (LSL) cementing its status as the de facto standard for multimodal synchronization. In their seminal 2024 reference paper, \cite{kothe2025lab} validated the LSL ecosystem's ability to achieve sub-millisecond accuracy by employing a distributed clock discovery protocol similar to NTP, which continuously estimates offsets and drifts between source and recording clocks. This software-centric approach has been pivotal for enabling "zero-configuration" resilience in complex setups, allowing disparate devices to synchronize without shared hardware triggers[3]. For instance, \cite{larsen2024method} applied this framework to the notoriously difficult task of synchronizing EEG with VR-integrated eye-tracking, quantifying a stable hardware offset of 36 ms but noting a persistent stochastic jitter of 5.76 ms inherent to the buffering of consumer-grade peripherals. To mitigate the specific latencies introduced by game engines like Unity, \cite{niehorster2025tittalsl} developed "TittaLSL," a plugin that decouples data transmission from the rendering loop; this allows for end-to-end latencies as low as 3.05 ms, preventing graphical frame drops from corrupting the time-series integrity of the biosignals [5]. This philosophy of software abstraction is further exemplified by the B\cite{romani2025brainform}, which leverages LSL to scale gamified BCI data collection to consumer hardware, accepting minor precision trade-offs in exchange for massive ecological validity and ease of deployment [6].However, a counter-philosophy emphasizes Hardware-Ground Truth, arguing that software timestamps are insufficient for clinical-grade validity due to the "motion-to-photon" latency of display drivers. \cite{ignatious2023frequency} formalized this rigorous approach with the "Computation of Latencies in Event-related potential Triggers" (CLET) method, which mandates the use of photodiodes to physically measure the arrival of photons [7]. Their comparative analysis revealed counter-intuitive findings: modern VR headsets often exhibit lower latencies (approx. 82 ms) than standard LED monitors (approx. 122 ms) due to aggressive low-persistence driver optimizations, yet the variance remains high enough to smear high-frequency ERP components [8], [8]. This necessity for hardware validation was statistically reinforced by \cite{miziara2025comparative}, who compared three synchronization paradigms for TMS-EEG. They demonstrated that direct hardware routing (Paradigm 3) yields a relative timing error of ~0.1\%, drastically outperforming the ~0.8\% error of software-parallel methods, effectively proving that software middleware introduces a non-negligible noise floor [9], [9], [10]. Consequently, solutions like the TriggerBox and Chronos adapters remain critical for researchers requiring absolute temporal precision, serving as a bridge between the digital game state and the analog amplifier [11], [12]. Furthermore, \cite{ramlall2025development} extended this hardware rigor to networked environments, utilizing custom synchronization protocols to align dry-electrode EEG with vehicle telemetry in multi-participant driving simulators, ensuring that "collective neurophysiology" is aligned despite network variance [13].The third and most emergent philosophy treats latency not as a fixed error to be measured, but as a dynamic variable to be managed via Predictive and Compensatory Algorithms. This approach borrows heavily from edge computing and cloud gaming. \cite{yi2025towards} introduced the ARMA system, which guarantees latency Service Level Objectives (SLOs) in mobile edge computing by dynamically adjusting the complexity of Deep Neural Networks (DNNs) based on real-time network conditions; effectively, the system trades classification complexity for speed when jitter spikes, maintaining the real-time feedback loop required for serious games [14], [14]. Similarly, Microsoft researchers proposed "Ekho" \cite{hamadanian2023ekho}, a system that embeds inaudible pseudo-noise sequences into game audio to measure and compensate for inter-stream delays in real-time, achieving sub-10ms synchronization across disparate devices [15], . On the neurophysiological side, \cite{shirinpour2025bayesian} advanced "Bayesian Temporal Prediction" (BTP), which predicts the phase of ongoing neural oscillations to deliver stimuli with "negative latency"—initiating the rendering pipeline milliseconds before the brain enters the desired state `[16]`. Additionally, \cite{li2024assessing} proposed offline stepwise latency correction algorithms that iteratively align single-trial EEG data post-hoc, effectively "de-jittering" the signal mathematically to recover sharp ERP features even from noisy recording environments `[17]`. Finally, \cite{liu2022survey} developed the CLAAP model for cloud gaming, which uses time-series forecasting to predict latency spikes before they occur, allowing the game engine to preemptively adjust its state, a technique highly applicable to remote BCI assessments.
+The integration of electroencephalography (EEG) into serious games necessitates a departure from the deterministic timing of traditional psychophysics toward architectures capable of managing the stochastic nature of modern game engines and wireless transmission. In the last years, the resolution of unpredictable latency and jitter has coalesced around a progression of engineering philosophies, moving from software-defined abstraction to hardware-grounded validation, and finally to predictive algorithmic compensation.The dominant engineering philosophy in recent years has been the abstraction of hardware timing differences through Network-Layer Middleware, with the Lab Streaming Layer (LSL) cementing its status as the de facto standard for multimodal synchronization. In their seminal 2024 reference paper, \cite{kothe2025lab} validated the LSL ecosystem's ability to achieve sub-millisecond accuracy by employing a distributed clock discovery protocol similar to NTP, which continuously estimates offsets and drifts between source and recording clocks. This software-centric approach has been pivotal for enabling "zero-configuration" resilience in complex setups, allowing disparate devices to synchronize without shared hardware triggers. For instance, \cite{larsen2024method} applied this framework to the notoriously difficult task of synchronizing EEG with VR-integrated eye-tracking, quantifying a stable hardware offset of 36 ms but noting a persistent stochastic jitter of 5.76 ms inherent to the buffering of consumer-grade peripherals. To mitigate the specific latencies introduced by game engines like Unity, \cite{niehorster2025tittalsl} developed "TittaLSL," a plugin that decouples data transmission from the rendering loop; this allows for end-to-end latencies as low as 3.05 ms, preventing graphical frame drops from corrupting the time-series integrity of the biosignals. This philosophy of software abstraction is further exemplified by the B\cite{romani2025brainform}, which leverages LSL to scale gamified BCI data collection to consumer hardware, accepting minor precision trade-offs in exchange for massive ecological validity and ease of deployment.  However, a counter-philosophy emphasizes Hardware-Ground Truth, arguing that software timestamps are insufficient for clinical-grade validity due to the "motion-to-photon" latency of display drivers. \cite{ignatious2023frequency} formalized this rigorous approach with the "Computation of Latencies in Event-related potential Triggers" (CLET) method, which mandates the use of photodiodes to physically measure the arrival of photons [7]. Their comparative analysis revealed counter-intuitive findings: modern VR headsets often exhibit lower latencies (approx. 82 ms) than standard LED monitors (approx. 122 ms) due to aggressive low-persistence driver optimizations, yet the variance remains high enough to smear high-frequency ERP components. This necessity for hardware validation was statistically reinforced by \cite{miziara2025comparative}, who compared three synchronization paradigms for TMS-EEG. They demonstrated that direct hardware routing (Paradigm 3) yields a relative timing error of ~0.1\%, drastically outperforming the ~0.8\% error of software-parallel methods, effectively proving that software middleware introduces a non-negligible noise floor. Consequently, solutions like the TriggerBox and Chronos adapters remain critical for researchers requiring absolute temporal precision, serving as a bridge between the digital game state and the analog amplifier. Furthermore, \cite{ramlall2025development} extended this hardware rigor to networked environments, utilizing custom synchronization protocols to align dry-electrode EEG with vehicle telemetry in multi-participant driving simulators, ensuring that "collective neurophysiology" is aligned despite network variance. The third and most emergent philosophy treats latency not as a fixed error to be measured, but as a dynamic variable to be managed via Predictive and Compensatory Algorithms. This approach borrows heavily from edge computing and cloud gaming. \cite{yi2025towards} introduced the ARMA system, which guarantees latency Service Level Objectives (SLOs) in mobile edge computing by dynamically adjusting the complexity of Deep Neural Networks (DNNs) based on real-time network conditions; effectively, the system trades classification complexity for speed when jitter spikes, maintaining the real-time feedback loop required for serious games. Similarly, Microsoft researchers proposed "Ekho" \cite{hamadanian2023ekho}, a system that embeds inaudible pseudo-noise sequences into game audio to measure and compensate for inter-stream delays in real-time, achieving sub-10ms synchronization across disparate devices. On the neurophysiological side, \cite{shirinpour2025bayesian} advanced "Bayesian Temporal Prediction" (BTP), which predicts the phase of ongoing neural oscillations to deliver stimuli with "negative latency"—initiating the rendering pipeline milliseconds before the brain enters the desired state. Additionally, \cite{li2024assessing} proposed offline stepwise latency correction algorithms that iteratively align single-trial EEG data post-hoc, effectively "de-jittering" the signal mathematically to recover sharp ERP features even from noisy recording environments. Finally, \cite{liu2022survey} developed the CLAAP model for cloud gaming, which uses time-series forecasting to predict latency spikes before they occur, allowing the game engine to preemptively adjust its state, a technique highly applicable to remote BCI assessments.
 
-\begin{center}
+\begin{figure}[H]
+  \centering
   \resizebox{\textwidth}{!}{%
     \begin{forest}
       % Tree Configuration
@@ -112,13 +106,16 @@ The integration of electroencephalography (EEG) into serious games necessitates 
       \draw[mybrace] (predlist.north east) -- (predlist.south east);
     \end{forest}%
   }
-\end{center}
+  \caption{Taxonomy of mitigation strategies for unpredictable latency and jitter in multi-modal biomarker synchronization. The diagram categorizes current approaches into software middleware, hardware ground truth validation, and predictive algorithmic compensation.}
+  \label{fig:forest_latency}
+\end{figure}
 
 \subsection{Resource and Power Constraints in Embedded EEG Platforms}
 
-As the MONEEE system targets mobile usage, the engineering challenge shifts to maximizing signal fidelity within the stringent power envelopes of wearable devices. The literature recently addresses this through three synergistic philosophies: reducing data volume via Compressive Sensing, processing data at the edge via TinyML, and optimizing the physical layer via Low-Power ASIC Design.The philosophy of Compressive Sensing (CS) challenges the Nyquist-Shannon theorem, positing that EEG signals can be reconstructed from sparse samples to drastically reduce transmission energy—the primary consumer of battery life in wireless nodes [18]. The state-of-the-art has evolved from simple linear reconstruction to "Deep Compressed Sensing" (CS-EEG). \cite{lin2024cs} demonstrated that integrating CNN-LSTM networks into the reconstruction pipeline allows for compression ratios of up to 70\% while maintaining a Percentage Root-mean-square Difference (PRD) of less than 7\% [19], [20], [21]. This approach offloads the heavy computational reconstruction to the server, keeping the wearable sensor simple. \cite{kanemoto2025development} implemented these principles in a wireless EEG transmission system that consumes a mere 72 µW, orders of magnitude lower than standard Bluetooth protocols [22], [22]. Further refinement comes from \cite{zhu2024compressive}, who introduced "Non-local Low-Rank and Cosparse Priors" (NLRC); this technique exploits the high inter-channel correlation of high-density EEG arrays to enhance reconstruction quality without increasing the sampling rate, effectively allowing for denser sensor grids on limited power budgets [23], [23]. Reviews by \cite{das2021efficient} further categorize these methods, highlighting that while lossless methods like ECoT ensure integrity, hybrid lossy methods are essential for the high-bandwidth demands of serious gaming [24], [25].Complementing transmission reduction is the TinyML philosophy: "transmit insights, not data." By processing bio-markers directly on the microcontroller (MCU), these systems eliminate the bandwidth cost of raw data streaming. \cite{tsakanika2025high} and \cite{hizem2025sustainable} have pioneered the deployment of complex seizure detection algorithms on resource-constrained ARM Cortex-M and STM32 chips using quantization techniques [26], [27], [28]. By converting 32-bit floating-point weights to 8-bit integers (INT8), they achieved model size reductions of over 50\% (down to ~23KB) with negligible loss in accuracy (maintaining >98\% sensitivity) [29]. To automate the design of these efficient networks, researchers at \cite{tragoudaras2023tinyml} applied "Neural Architecture Search" (NAS) specifically for EEG, generating models that fit within kilobytes of SRAM while optimizing for inference latency [30], [30]. This edge-intelligence capability is realized in systems like \cite{basit2025cognitivearm}, a prosthetic control interface that runs deep learning motor imagery classification entirely on embedded hardware [31], [31], and STM32-based emotion recognition systems that adapt game mechanics in real-time based on the user's affective state [32]. Comprehensive surveys by the IEEE Internet of Things Journal (2025) confirm that TinyML is shifting the paradigm from cloud-dependent BCI to "self-contained" neuro-wearables \cite{li2025high}, \cite{xu2025analog}.Finally, the foundational Low-Power ASIC philosophy focuses on optimizing the analog front-end (AFE) to reduce the baseline power consumption of signal acquisition. \cite{watcharapongvinit2023design} presented a ground-free AFE design consuming only 6.55 µW per channel while maintaining robust noise rejection, critical for ambulatory settings where motion artifacts are prevalent [35], [36]. \cite{li2025high} pushed these limits further with a gain-configurable readout circuit achieving an input-referred noise floor of just 0.42 µVpp, ensuring that low-power operation does not compromise the detection of subtle neurocognitive components \cite{mohamed2023advancements}. Innovators like CSEM have also introduced "cooperative sensor" architectures, where active electrodes are connected via a single unshielded bus, reducing the weight and complexity of the headset cabling \cite{sriraam2023low}. Furthermore, the shift toward "Event-Driven" processing is gaining traction; \cite{qaisar2023adaptive} and other groups have developed hybrid processors that utilize Spiking Neural Networks (SNNs) or Level-Crossing ADCs (LCADC) to process signals only when significant voltage changes occur, mimicking the brain's own energy-efficient sparsity \cite{liu2023ultra}. Recent work by \cite{liu2022progress} on Ear-EEG AFEs demonstrates that these low-power techniques can be miniaturized into hearable form factors, opening new avenues for unobtrusive serious gaming interfaces [39], [39]. \cite{musialek2024} also demonstrated a low-power sonification algorithm on MCU, proving that complex real-time feedback is possible within a 12mW envelope [40].
+As the MONEEE system targets mobile usage, the engineering challenge shifts to maximizing signal fidelity within the stringent power envelopes of wearable devices. The literature recently addresses this through three synergistic philosophies: reducing data volume via Compressive Sensing, processing data at the edge via TinyML, and optimizing the physical layer via Low-Power ASIC Design.The philosophy of Compressive Sensing (CS) challenges the Nyquist-Shannon theorem, positing that EEG signals can be reconstructed from sparse samples to drastically reduce transmission energy—the primary consumer of battery life in wireless nodes. The state-of-the-art has evolved from simple linear reconstruction to "Deep Compressed Sensing" (CS-EEG). \cite{lin2024cs} demonstrated that integrating CNN-LSTM networks into the reconstruction pipeline allows for compression ratios of up to 70\% while maintaining a Percentage Root-mean-square Difference (PRD) of less than 7\%. This approach offloads the heavy computational reconstruction to the server, keeping the wearable sensor simple. \cite{kanemoto2025development} implemented these principles in a wireless EEG transmission system that consumes a mere 72 µW, orders of magnitude lower than standard Bluetooth protocols. Further refinement comes from \cite{zhu2024compressive}, who introduced "Non-local Low-Rank and Cosparse Priors" (NLRC); this technique exploits the high inter-channel correlation of high-density EEG arrays to enhance reconstruction quality without increasing the sampling rate, effectively allowing for denser sensor grids on limited power budgets. Reviews by \cite{das2021efficient} further categorize these methods, highlighting that while lossless methods like ECoT ensure integrity, hybrid lossy methods are essential for the high-bandwidth demands of serious gaming. Complementing transmission reduction is the TinyML philosophy: "transmit insights, not data." By processing bio-markers directly on the microcontroller (MCU), these systems eliminate the bandwidth cost of raw data streaming. \cite{tsakanika2025high} and \cite{hizem2025sustainable} have pioneered the deployment of complex seizure detection algorithms on resource-constrained ARM Cortex-M and STM32 chips using quantization techniques. By converting 32-bit floating-point weights to 8-bit integers (INT8), they achieved model size reductions of over 50\% (down to ~23KB) with negligible loss in accuracy (maintaining >98\% sensitivity). To automate the design of these efficient networks, researchers at \cite{tragoudaras2023tinyml} applied "Neural Architecture Search" (NAS) specifically for EEG, generating models that fit within kilobytes of SRAM while optimizing for inference latency. This edge-intelligence capability is realized in systems like \cite{basit2025cognitivearm}, a prosthetic control interface that runs deep learning motor imagery classification entirely on embedded hardware, and STM32-based emotion recognition systems that adapt game mechanics in real-time based on the user's affective state. Comprehensive surveys by the IEEE Internet of Things Journal (2025) confirm that TinyML is shifting the paradigm from cloud-dependent BCI to "self-contained" neuro-wearables \cite{li2025high}, \cite{xu2025analog}. Finally, the foundational Low-Power ASIC philosophy focuses on optimizing the analog front-end (AFE) to reduce the baseline power consumption of signal acquisition. \cite{watcharapongvinit2023design} presented a ground-free AFE design consuming only 6.55 µW per channel while maintaining robust noise rejection, critical for ambulatory settings where motion artifacts are prevalent. \cite{li2025high} pushed these limits further with a gain-configurable readout circuit achieving an input-referred noise floor of just 0.42 µVpp, ensuring that low-power operation does not compromise the detection of subtle neurocognitive components \cite{mohamed2023advancements}. Innovators like CSEM have also introduced "cooperative sensor" architectures, where active electrodes are connected via a single unshielded bus, reducing the weight and complexity of the headset cabling \cite{sriraam2023low}. Furthermore, the shift toward "Event-Driven" processing is gaining traction; \cite{qaisar2023adaptive} and other groups have developed hybrid processors that utilize Spiking Neural Networks (SNNs) or Level-Crossing ADCs (LCADC) to process signals only when significant voltage changes occur, mimicking the brain's own energy-efficient sparsity \cite{liu2023ultra}. Recent work by \cite{liu2022progress} on Ear-EEG AFEs demonstrates that these low-power techniques can be miniaturized into hearable form factors, opening new avenues for unobtrusive serious gaming interfaces. \cite{musialek2024} also demonstrated a low-power sonification algorithm on MCU, proving that complex real-time feedback is possible within a 12mW envelope.
 
-\begin{center}
+\begin{figure}[H]
+  \centering
   \resizebox{\textwidth}{!}{%
     \begin{forest}
       % Tree Configuration
@@ -180,4 +177,242 @@ As the MONEEE system targets mobile usage, the engineering challenge shifts to m
       \draw[mybrace] (asiclist.north east) -- (asiclist.south east);
     \end{forest}%
   }
-\end{center}
+  \caption{Overview of resource and power constraints across transmission, processing, and physical layer approaches.}
+  \label{fig:forest_constraints}
+\end{figure}
+
+The review of the state of the art reveals a clear dichotomy in current EEG acquisition architectures between reliable but bulky clinical systems and portable but latency-prone consumer devices; consequently, the most promising alternative for the MONEEE system lies in a wired architecture utilizing high-speed USB serial communication to connect the acquisition unit directly to the host device running the serious game, thereby eliminating the stochastic jitter and bandwidth limitations inherent in wireless transmission protocols. However, existing solutions exhibit significant limitations, as commercial "black-box" systems often restrict access to low-level communication interfaces required for real-time interaction, while standard libraries typically rely on software timestamps that drift from the hardware clock. To address these challenges and strictly validate the proposed system, performance will be defined by the Serial Communication Latency ($\Delta t_{comm}$), measured strictly as the time elapsed between the game event generation and the arrival of the data packet at the microcontroller via the dedicated integration library, alongside Synchronization Jitter ($\sigma_{lat}$) which must target a standard deviation of $< 1 \text{ ms}$ over the USB interface to ensure precise event alignment. Furthermore, Signal Fidelity will be assessed via the Percentage Root-mean-square Difference (PRD) to validate data integrity during high-throughput transmission, and Power Efficiency ($P_{eff}$) will be quantified in $\mu W/\text{channel}$ to ensure that the USB-powered or battery-assisted configuration remains viable for extended sessions, thereby aiming to bridge the gap between clinical precision and gamified usability in the treatment of ADHD.
+
+
+
+\begin{table}[H]
+  \caption{Target Performance Specifications for the MONEEE System}
+  \label{table:moneee_specs}
+  \centering
+  \begin{tabular}{|l|l|l|}
+    \hline
+    \textbf{Parameter}       & \textbf{State of the Art Gap}  & \textbf{MONEEE Target}           \\ \hline
+    \textbf{Architecture}    & Wireless (High Latency/Jitter) & Wired USB Serial (Deterministic) \\ \hline
+    \textbf{Synchronization} & Network Middleware (e.g., LSL) & Direct Library Integration       \\ \hline
+    \textbf{Latency source}  & Bluetooth Stack + Rendering    & USB Polling Rate Only            \\ \hline
+    \textbf{Validation}      & External Hardware (Photodiode) & Internal Library Timestamps      \\ \hline
+  \end{tabular}
+\end{table}
+
+
+% \section{State of the Art}\label{sec:stateofart}
+
+% The development of EEG acquisition systems has evolved into two distinct architectural paradigms: conventional remote monitoring and portable smart systems. Conventional systems primarily act as digitizers, transmitting raw EEG signals to a remote unit for deferred processing \cite{arpaia2020wearable}. In contrast, portable systems integrate local preprocessing capabilities directly onto microcontrollers (MCU) and utilize low-power protocols for wireless transmission. While this latter approach enhances mobility—a crucial factor for serious games and ecological validity—it introduces significant engineering challenges regarding signal fidelity, power consumption, and, most critically, synchronization latency \cite{gomezromero2024implications}.
+
+
+
+% \subsection{Trade-offs in Portable Acquisition Design}
+
+% The transition from clinical to portable environments necessitates a complex trade-off between wearability and data quality. This balance is primarily governed by electrode technology, channel density, and front-end processing.
+
+% \textbf{Signal Acquisition and Conditioning:} The choice of electrode is a determining factor in signal integrity \cite{liu2023feature}. While dry electrodes offer superior portability and setup speed, they often suffer from high impedance and reduced conductivity compared to wet counterparts, complicating the precise synchronization required for event-related potentials (ERPs) in gaming contexts. Furthermore, Signal Front-End Amplifiers (AFE) \cite{devi2022survey} dictate the noise floor of the system. Portable implementations often rely on lower-power, cost-effective AFEs which, while energy-efficient, may lack the processing headroom of clinical amplifiers, introducing noise that complicates the isolation of neurocognitive markers.
+
+% \textbf{Channel Density vs. Bandwidth:} To minimize size and maximize portability, diverse systems employ low channel density configurations (e.g., 8–16 channels) \cite{allouch2023effect, abdullah2022eeg}. While this reduces the data throughput required for wireless transmission, it compromises spatial resolution. Conversely, increasing channel density or sampling rates to capture fast brain events (such as attention shifts) places a strain on wireless bandwidth and battery life \cite{zheng2023effects}.
+
+% \textbf{Power Constraints:} Battery autonomy \cite{niso2023wireless} remains a bottleneck for longitudinal monitoring. Systems operating for extended sessions often throttle sampling rates or transmission frequency to conserve energy, a strategy that directly conflicts with the need for high-temporal-resolution synchronization in real-time serious games.
+
+% \subsection{Analysis of Commercial and Research BCI Platforms}
+
+% The current market of BCI hardware, summarized in Table \ref{table:bci_hardware}, reveals a spectrum of devices tailored to specific use cases, ranging from high-fidelity research tools to consumer-grade interfaces.
+
+% \textbf{Research-Grade Systems:} Devices such as the \textbf{g.Nautilus} \cite{Gtec_GNautilusProFlexible}, \textbf{actiCAP} \cite{BrainProducts_ActiCap}, and the ambulatory platform by \cite{pinho2014wireless} prioritize signal quality and flexibility. These systems typically support high channel counts (up to 32 or 40) and utilize high-performance AFEs like the ADS1299 to maintain clinical-grade data. However, they often rely on proprietary protocols or wired connections to handle the high data rates, which can limit the freedom of movement necessary for immersive gaming.
+
+% \textbf{Consumer and Hybrid Systems:} On the other end of the spectrum, devices like the \textbf{Emotiv EPOC X} \cite{Emotiv_EPOCX} and \textbf{Bitbrain Diadem} \cite{Bitbrain_Diadem} sacrifice channel count and sampling rate (often capped at 128--256 Hz) to achieve greater portability and user-friendliness via Bluetooth Low Energy (BLE). While accessible, the lower temporal resolution and reliance on standard Bluetooth stacks introduce latency variability that is often unacceptable for precise marker synchronization.
+
+% \textbf{The Open Source Standard:} The \textbf{OpenBCI Cyton + Daisy} \cite{OpenBCI_CytonDaisy} represents a middle ground, offering 16 channels and configurable sampling rates. While it provides raw data access essential for research, its standard wireless transmission (RF/Wi-Fi) still faces the bandwidth and jitter challenges inherent to wireless protocols when scaled to multi-modal applications.
+
+% \begin{table}[H]
+%   \caption{Acquisition devices used for BCI. The table provides an overview of the different hardware devices, their specifications, and communication protocols.}
+%   \label{table:bci_hardware}
+%   \centering
+%   \footnotesize
+%   \begin{tabularx}{\textwidth}{|X|p{1.8cm}|p{1.8cm}|c|>{\centering\arraybackslash}X|c|X|c|}
+%     \hline
+%     \textbf{Hardware BCI}                        & \textbf{Company}    & \textbf{Electrode Type} & \textbf{Ch.} & \textbf{Sampling Rate} & \textbf{AFE} & \textbf{Protocol}  & \textbf{Battery} \\ \hline
+%     Cyton + Daisy \cite{OpenBCI_CytonDaisy}      & OpenBCI             & Flexible / Wet / Dry    & 16           & 250 Hz - 16 kHz        & ADS1299      & RF / BLE / Wi-Fi   & 8 h              \\ \hline
+%     actiCAP \cite{BrainProducts_ActiCap}         & Brain Products GmbH & Flexible / Wet / Dry    & 16           & 256 Hz - 16 kHz        & -            & USB                & 16 h             \\ \hline
+%     EPOC X \cite{Emotiv_EPOCX}                   & Emotiv              & Rigid / Wet             & 14           & 128 Hz                 & -            & BLE / Bluetooth    & 6--12 h          \\ \hline
+%     Diadem \cite{Bitbrain_Diadem}                & Bitbrain            & Rigid / Dry             & 12           & 256 Hz                 & -            & Bluetooth          & 8 h              \\ \hline
+%     g.Nautilus \cite{Gtec_GNautilusProFlexible}  & g.tec               & Flexible                & 8/16/32      & 250 Hz                 & ADS1299      & Proprietary        & 10 h             \\ \hline
+%     Ambulatory Platform \cite{pinho2014wireless} & -                   & Active / Dry            & 32           & 250 Hz - 1 kHz         & ADS1299      & Wi-Fi 802.11 b/g/n & 26 h             \\ \hline
+%     Neurofeedback System \cite{Totev2023}        & -                   & Passive / Dry           & 40           & 250 Hz                 & ADS1298      & RF                 & -                \\ \hline
+%     BEATS \cite{Beats}                           & -                   & Flexible / Wet          & 32           & 4 kHz                  & ADS1299      & Wi-Fi              & 24 h (wired)     \\ \hline
+%   \end{tabularx}
+% \end{table}
+
+% \subsection{Unpredictable Latency and Jitter Between Game Events and EEG Recordings}
+
+% The integration of electroencephalography (EEG) into serious games necessitates a departure from the deterministic timing of traditional psychophysics toward architectures capable of managing the stochastic nature of modern game engines and wireless transmission. Marker synchronization in portable systems \cite{razavi2022opensync} faces severe operational challenges; inherent limitations such as bandwidth constraints and protocol overheads can cause temporal mismatches between the brain event and the game interaction \cite{he2023diversity}.
+
+% In recent years, the resolution of this unpredictable latency and jitter has coalesced around a progression of engineering philosophies, moving from software-defined abstraction to hardware-grounded validation, and finally to predictive algorithmic compensation.
+
+% The dominant engineering philosophy has been the abstraction of hardware timing differences through \textbf{Network-Layer Middleware}, with the Lab Streaming Layer (LSL) cementing its status as the standard for multimodal synchronization. \cite{kothe2025lab} validated the LSL ecosystem's ability to achieve sub-millisecond accuracy by employing a distributed clock discovery protocol similar to NTP. This software-centric approach enables "zero-configuration" resilience. For instance, \cite{larsen2024method} applied this framework to synchronizing EEG with VR-integrated eye-tracking, quantifying a stable hardware offset of 36 ms but noting a persistent stochastic jitter of 5.76 ms inherent to consumer-grade buffering. To mitigate game engine latencies (e.g., Unity), \cite{niehorster2025tittalsl} developed "TittaLSL," a plugin decoupling data transmission from the rendering loop to achieve latencies as low as 3.05 ms.
+
+% However, a counter-philosophy emphasizes \textbf{Hardware-Ground Truth}, arguing that software timestamps are insufficient for clinical-grade validity due to "motion-to-photon" latency. \cite{ignatious2023frequency} formalized this with the "Computation of Latencies in Event-related potential Triggers" (CLET) method, mandating photodiodes to physically measure photon arrival. Their analysis revealed that while modern VR headsets often exhibit lower latencies (approx. 82 ms) than standard monitors (approx. 122 ms), variance remains high enough to smear high-frequency ERP components. \cite{miziara2025comparative} statistically reinforced this, demonstrating that direct hardware routing yields a relative timing error of $\sim0.1\%$, drastically outperforming the $\sim0.8\%$ error of software-parallel methods.
+
+% The third and most emergent philosophy treats latency as a dynamic variable to be managed via \textbf{Predictive and Compensatory Algorithms}. \cite{yi2025towards} introduced the ARMA system, which guarantees latency Service Level Objectives (SLOs) by dynamically adjusting neural network complexity based on network conditions. Similarly, "Ekho" \cite{hamadanian2023ekho} embeds inaudible pseudo-noise sequences into game audio to measure inter-stream delays in real-time. On the neurophysiological side, \cite{shirinpour2025bayesian} advanced "Bayesian Temporal Prediction" (BTP) to predict neural phases and deliver stimuli with "negative latency," initiating the rendering pipeline before the brain enters the desired state.
+
+% \begin{figure}[H]
+%   \centering
+%   \resizebox{\textwidth}{!}{%
+%     \begin{forest}
+%       % Tree Configuration
+%       for tree={
+%       grow'=0,             % Grow to the right
+%       parent anchor=east,    % Edges start from east
+%       child anchor=west,     % Edges end at west
+%       anchor=west,           % Align text to the left
+%       calign=center,         % Center alignment
+%       edge path={
+%           \noexpand\path[\forestoption{edge}]
+%           (!u.parent anchor) -- +(10pt,0) |- (.child anchor)\forestoption{edge label};
+%         },
+%       font=\sffamily,
+%       l sep=1cm,             % Horizontal separation
+%       s sep=0.6cm,           % Vertical separation
+%       }
+%       % ----------------------------------------------------------
+%       % TREE CONTENT
+%       % ----------------------------------------------------------
+%       [\textbf{\Large Unpredictable Latency} \\ \textbf{\Large \& Jitter}, align=center
+%       [{\textbf{Software Middleware} \\ (Abstraction)}, align=center
+%       [\textbullet\ LSL Ecosystem (\cite{kothe2025lab}) \\
+%       \textbullet\ TittaLSL Plugin (\cite{niehorster2025tittalsl}) \\
+%       \textbullet\ BrainForm System (\cite{romani2025brainform}),
+%       align=left, name=softlist]
+%       ]
+%       [{\textbf{Hardware Ground Truth} \\ (Validation)}, align=center
+%       [\textbullet\ Photodiodes \& CLET (\cite{ignatious2023frequency}) \\
+%       \textbullet\ TriggerBox \& Chronos (\cite{ramlall2025development}) \\
+%       \textbullet\ Direct Routing (\cite{miziara2025comparative}),
+%       align=left, name=hardlist]
+%       ]
+%       [{\textbf{Predictive Algorithms} \\ (Compensation)}, align=center
+%       [\textbullet\ Edge Computing (ARMA) (\cite{yi2025towards}) \\
+%       \textbullet\ Audio Pseudo-noise (Ekho) (\cite{hamadanian2023ekho}) \\
+%       \textbullet\ Neuro-Prediction (Zrenner et al.) (\cite{shirinpour2025bayesian}),
+%       align=left, name=predlist]
+%       ]
+%       ]
+%       % ----------------------------------------------------------
+%       % ANNOTATIONS (Curly Braces)
+%       % ----------------------------------------------------------
+%       \node[description] at (softlist.east) (softdesc) {
+%         (+) Easy deployment \\
+%         (-) Stochastic jitter ($\approx$ 5ms)
+%       };
+%       \draw[mybrace] (softlist.north east) -- (softlist.south east);
+%       \node[description] at (hardlist.east) (harddesc) {
+%         (+) High precision (0.1\% error) \\
+%         (-) Complex setup \& cabling
+%       };
+%       \draw[mybrace] (hardlist.north east) -- (hardlist.south east);
+%       \node[description] at (predlist.east) (preddesc) {
+%         (+) Real-time compensation \\
+%         (+) Handles dynamic lag
+%       };
+%       \draw[mybrace] (predlist.north east) -- (predlist.south east);
+%     \end{forest}%
+%   }
+%   \caption{Taxonomy of mitigation strategies for unpredictable latency and jitter in multi-modal biomarker synchronization.}
+%   \label{fig:forest_latency}
+% \end{figure}
+
+% \subsection{Resource and Power Constraints in Embedded EEG Platforms}
+
+% As the MONEEE system targets mobile usage, the engineering challenge shifts to maximizing signal fidelity within the stringent power envelopes of wearable devices. The literature recently addresses this through three synergistic philosophies: reducing data volume via Compressive Sensing, processing data at the edge via TinyML, and optimizing the physical layer via Low-Power ASIC Design.
+
+% The philosophy of \textbf{Compressive Sensing (CS)} challenges the Nyquist-Shannon theorem, positing that EEG signals can be reconstructed from sparse samples. \cite{lin2024cs} demonstrated that integrating CNN-LSTM networks into the reconstruction pipeline allows for compression ratios of up to 70\% while maintaining a Percentage Root-mean-square Difference (PRD) of less than 7\%. \cite{kanemoto2025development} implemented these principles to achieve wireless transmission consuming merely 72 µW. Further refinement comes from \cite{zhu2024compressive}, using "Non-local Low-Rank and Cosparse Priors" (NLRC) to exploit inter-channel correlations in high-density arrays.
+
+% Complementing transmission reduction is the \textbf{TinyML} philosophy: "transmit insights, not data." \cite{tsakanika2025high} and \cite{hizem2025sustainable} pioneered the deployment of complex seizure detection algorithms on resource-constrained chips (ARM Cortex-M, STM32) using quantization (INT8), achieving model size reductions of over 50\% with negligible accuracy loss. Researchers at \cite{tragoudaras2023tinyml} applied "Neural Architecture Search" (NAS) to generate models fitting within kilobytes of SRAM.
+
+% Finally, the \textbf{Low-Power ASIC} philosophy focuses on the analog front-end. \cite{watcharapongvinit2023design} presented a ground-free AFE design consuming only 6.55 µW per channel. \cite{li2025high} pushed these limits with gain-configurable circuits achieving a noise floor of 0.42 µVpp. Additionally, "Event-Driven" processing is gaining traction, utilizing Spiking Neural Networks (SNNs) or Level-Crossing ADCs to process signals only during significant voltage changes \cite{qaisar2023adaptive}.
+
+% \begin{figure}[H]
+%   \centering
+%   \resizebox{\textwidth}{!}{%
+%     \begin{forest}
+%       % Tree Configuration
+%       for tree={
+%       grow'=0,             % Grow to the right
+%       parent anchor=east,    % Edges start from east
+%       child anchor=west,     % Edges end at west
+%       anchor=west,           % Align text to the left
+%       calign=center,         % Center alignment
+%       edge path={
+%           \noexpand\path[\forestoption{edge}]
+%           (!u.parent anchor) -- +(10pt,0) |- (.child anchor)\forestoption{edge label};
+%         },
+%       font=\sffamily,
+%       l sep=1cm,             % Horizontal separation
+%       s sep=0.6cm,           % Vertical separation
+%       }
+%       % ----------------------------------------------------------
+%       % TREE CONTENT
+%       % ----------------------------------------------------------
+%       [\textbf{\Large Resource \& Power} \\ \textbf{\Large Constraints}, align=center
+%       [{\textbf{Compressive Sensing} \\ (Transmission)}, align=center
+%       [\textbullet\ Deep CS (CNN-LSTM)\cite{lin2024cs} \\
+%       \textbullet\ Ultra-Low Power Wireless\cite{kanemoto2025development} \\
+%       \textbullet\ NLRC (Correlations)\cite{zhu2024compressive},
+%       align=left, name=cslist]
+%       ]
+%       [{\textbf{TinyML Edge AI} \\ (Processing)}, align=center
+%       [\textbullet\ Quantization (INT8)\cite{tsakanika2025high} \\
+%       \textbullet\ Neural Arch. Search (NAS)\cite{tragoudaras2023tinyml} \\
+%       \textbullet\ Self-Contained Systems\cite{li2025high},
+%       align=left, name=tinylist]
+%       ]
+%       [{\textbf{Low-Power ASIC} \\ (Physical Layer)}, align=center
+%       [\textbullet\ Ground-Free AFE \cite{watcharapongvinit2023design} \\
+%       \textbullet\ Noise Optimization \cite{li2025high} \\
+%       \textbullet\ Event-Driven (SNN) \cite{liu2023ultra},
+%       align=left, name=asiclist]
+%       ]
+%       ]
+%       % ----------------------------------------------------------
+%       % ANNOTATIONS (Curly Braces)
+%       % ----------------------------------------------------------
+%       \node[description] at (cslist.east) (csdesc) {
+%         (+) 70\% Compression Ratio \\
+%         (+) 72 $\mu$W Consumption
+%       };
+%       \draw[mybrace] (cslist.north east) -- (cslist.south east);
+%       \node[description] at (tinylist.east) (tinydesc) {
+%         (+) Transmit insights, not data \\
+%         (+) 50\% Size Reduction
+%       };
+%       \draw[mybrace] (tinylist.north east) -- (tinylist.south east);
+%       \node[description] at (asiclist.east) (asicdesc) {
+%         (+) 6.55 $\mu$W per channel \\
+%         (+) High Noise Rejection
+%       };
+%       \draw[mybrace] (asiclist.north east) -- (asiclist.south east);
+%     \end{forest}%
+%   }
+%   \caption{Overview of resource and power constraints across transmission, processing, and physical layer approaches.}
+%   \label{fig:forest_constraints}
+% \end{figure}
+
+
+
+% The review reveals a dichotomy in current EEG architectures: reliable but bulky clinical systems versus portable but latency-prone consumer devices. The MONEEE system addresses this gap by proposing a wired architecture utilizing high-speed USB serial communication. This eliminates the stochastic jitter of wireless protocols while maintaining the form factor required for interaction. To strictly validate this system, performance will be defined by \textbf{Serial Communication Latency} ($\Delta t_{comm}$) and \textbf{Synchronization Jitter} ($\sigma_{lat}$), targeting a standard deviation of $< 1 \text{ ms}$.
+
+% \begin{table}[H]
+%   \caption{Target Performance Specifications for the MONEEE System}
+%   \label{table:moneee_specs}
+%   \centering
+%   \begin{tabular}{|l|l|l|}
+%     \hline
+%     \textbf{Parameter}       & \textbf{State of the Art Gap}  & \textbf{MONEEE Target}           \\ \hline
+%     \textbf{Architecture}    & Wireless (High Latency/Jitter) & Wired USB Serial (Deterministic) \\ \hline
+%     \textbf{Synchronization} & Network Middleware (e.g., LSL) & Direct Library Integration       \\ \hline
+%     \textbf{Latency source}  & Bluetooth Stack + Rendering    & USB Polling Rate Only            \\ \hline
+%     \textbf{Validation}      & External Hardware (Photodiode) & Internal Library Timestamps      \\ \hline
+%   \end{tabular}
+% \end{table}

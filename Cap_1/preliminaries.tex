@@ -9,10 +9,10 @@ Several neuroimaging techniques have been explored for use in Brain–Computer I
 Electroencephalography (EEG), by contrast, emerges as the most suitable modality for BCI applications that demand real-time responsiveness, portability, and affordability. EEG records the brain's electrical activity through non-invasive scalp electrodes, offering millisecond-level temporal resolution ideal for tracking rapid cognitive events like attention shifts or inhibitory control. While EEG's spatial resolution is lower compared to fMRI or MEG, advances in signal processing—such as QEEG, functional connectivity analysis, and source localization—have greatly enhanced its ability to extract meaningful neurophysiological markers \cite{Caiado2025,Yadav2023, Varbu2022}. Moreover, EEG's lightweight hardware, low infrastructure requirements, and compatibility with embedded systems make it an ideal foundation for interactive, portable, and scalable BCI solutions.
 
 \begin{figure}[h]
- \centering
- \includegraphics[width=1\textwidth]{Cap_1/Figures/Neuroimage.pdf}
- \caption{Comparison of neuroimaging modalities by spatial resolution, temporal resolution, and cost. EEG stands out for its affordability, portability, and millisecond-level responsiveness.}
- \label{fig:neuroimaging_comparison}
+    \centering
+    \includegraphics[width=1\textwidth]{Cap_1/Figures/Neuroimage.pdf}
+    \caption{Comparison of neuroimaging modalities by spatial resolution, temporal resolution, and cost. EEG stands out for its affordability, portability, and millisecond-level responsiveness.}
+    \label{fig:neuroimaging_comparison}
 \end{figure}
 
 One of the most compelling clinical applications of EEG-based BCIs is in the assessment and intervention of neurodevelopmental disorders such as Attention Deficit Hyperactivity Disorder (ADHD). ADHD affects approximately 10\% of children in Colombia \cite{salari2023global,pineda2003prevalence} and is characterized by persistent symptoms of inattention, hyperactivity, and impulsivity that interfere with academic performance, social relationships, and emotional regulation. Conventional diagnostic practices rely heavily on behavioral questionnaires and clinical observation, which, while informative, are inherently subjective and susceptible to bias \cite{raiker2017accuracy}. In this context, EEG offers a valuable alternative by enabling the objective measurement of neural correlates linked to attention and impulse control. Well-established EEG biomarkers such as elevated theta/beta ratios and altered event-related potentials (e.g., P300) have been extensively validated in the ADHD literature, making EEG a scientifically robust and clinically relevant tool for real-time cognitive monitoring and neurofeedback interventions.
@@ -20,16 +20,16 @@ One of the most compelling clinical applications of EEG-based BCIs is in the ass
 Serious games are digital environments designed not solely for entertainment, but to fulfill educational, therapeutic, or cognitive objectives. In the context of neurodevelopmental disorders such as ADHD, they have become increasingly relevant as tools for both cognitive assessment and intervention \cite{Patino2025}. Their engaging and adaptive nature allows them to target specific executive functions—like attention, inhibition, and working memory—while maintaining high user motivation, particularly among children \cite{RodriguezTimana2024}. These features make serious games particularly compatible with EEG-based BCIs for interactive cognitive modulation.
 
 
-Serious games designed for ADHD not only provide engaging environments for cognitive stimulation, but also serve as structured frameworks for assessing and training specific executive functions. Two principal paradigms guide the design of these games. The first is the task-based paradigm, which integrates classical neuropsychological tasks—such as the Go/No-Go, n-back, or Stroop test—into interactive game mechanics. This allows for the precise measurement of behavioral responses tied to well-established cognitive models \cite{Fang2025}. The second is the neurofeedback paradigm, in which the game dynamically responds to real-time EEG signals, offering auditory or visual feedback based on the user’s brain state. This paradigm supports operant conditioning mechanisms, encouraging users to self-regulate neural activity linked to attentional control and inhibition \cite{Firouzabadi2022}. 
+Serious games designed for ADHD not only provide engaging environments for cognitive stimulation, but also serve as structured frameworks for assessing and training specific executive functions. Two principal paradigms guide the design of these games. The first is the task-based paradigm, which integrates classical neuropsychological tasks—such as the Go/No-Go, n-back, or Stroop test—into interactive game mechanics. This allows for the precise measurement of behavioral responses tied to well-established cognitive models \cite{Fang2025}. The second is the neurofeedback paradigm, in which the game dynamically responds to real-time EEG signals, offering auditory or visual feedback based on the user’s brain state. This paradigm supports operant conditioning mechanisms, encouraging users to self-regulate neural activity linked to attentional control and inhibition \cite{Firouzabadi2022}.
 
 These paradigms are often aligned with four core cognitive models critical to ADHD pathology: attention, working memory, inhibition, and planning. Games targeting the attentional model aim to improve sustained and selective attention, often requiring players to maintain focus amid distractions or shifting stimuli \cite{Chen2024}. Working memory is typically trained through tasks that require the temporary storage and manipulation of information, such as remembering sequences or updating mental representations. The inhibition model involves suppressing prepotent responses or resisting distractions—commonly implemented through fast-paced decision-making challenges or impulse control mechanics \cite{Takahashi2024, BreitlingZiegler2020}. Finally, the planning model emphasizes goal-directed behavior, encouraging users to sequence actions, solve multi-step problems, or anticipate future outcomes \cite{Lorini2022}. By aligning game mechanics with these cognitive models, serious games become powerful tools not only for engagement but for targeted neurocognitive intervention, particularly when combined with EEG-based BCIs that provide objective feedback on brain performance in real time.
 
 
 \begin{figure}[h]
- \centering
- \includegraphics[width=1\textwidth]{Cap_1/Figures/cognitive.pdf}
- \caption{Core cognitive models targeted by serious games in ADHD interventions: attention, working memory, inhibition, and planning. Each model maps to a specific set of game dynamics and EEG markers.}
- \label{fig:cognitive_models}
+    \centering
+    \includegraphics[width=1\textwidth]{Cap_1/Figures/cognitive.pdf}
+    \caption{Core cognitive models targeted by serious games in ADHD interventions: attention, working memory, inhibition, and planning. Each model maps to a specific set of game dynamics and EEG markers.}
+    \label{fig:cognitive_models}
 \end{figure}
 
 
@@ -42,6 +42,17 @@ Recent developments in portable EEG hardware have expanded the applicability of 
 
 Altogether, these technological advances offer a promising foundation for rethinking ADHD diagnosis and intervention—especially in child populations. Nevertheless, critical technical challenges remain, particularly the synchronization of cognitive stimuli with neurophysiological responses in embedded systems. This challenge motivates the present research, which aims to design and implement a portable EEG acquisition and analysis system with precise synchronization to game events, enabling objective, real-time support for cognitive stimulation and diagnostic processes in children with ADHD.
 
+However, the effective integration of serious games with BCI systems creates a significant technical bottleneck: the synchronization of massive data volumes with real-time game mechanics. The combination of BCI data streams and game interaction events generates a high computational load, often compromising the system's ability to maintain the millisecond-level reaction times required for immersive play and accurate marker integration. Standard acquisition devices often lack the specific triggering mechanisms needed to align neurophysiological events with game stimuli precisely. Without a specialized acquisition architecture capable of mitigating these latencies, it becomes impossible to reliably correlate the dynamic game environment with the user’s neural response—specifically due to signal jitter and alignment errors—rendering the "closed-loop" adaptation ineffective for ADHD treatment.
 
+Furthermore, the nature of the physiological data itself imposes strict hardware and processing requirements. Cognitive and emotional processes associated with ADHD utilize neural pathways that exhibit high variability, non-stationarity, and non-linearity. When compounded by demographic factors such as age and gender, the resulting signal complexity requires sophisticated multimodal analysis models, particularly machine learning algorithms, to extract valid biomarkers. General-purpose EEG hardware often lacks the flexibility to integrate these advanced processing pipelines or to synchronize with multimodal data sources (like behavioral metrics from the game) in a way that supports the rigorous training of these models. This necessitates the design of a custom acquisition system capable of delivering high-fidelity, time-locked data suitable for complex inference.
+
+Finally, the post-COVID-19 context has fundamentally shifted the requirements for mental health technology toward remote and home-based accessibility. To address these challenges, this research operates within the framework of the ACEMATE project (Multimodal system supported by serious games for personalized neurocognitive assessment and intervention in impulsivity disorders associated with ADHD). ACEMATE aims to support face-to-face and remote interventions across clinical, educational, and community settings. However, realizing ACEMATE's vision of accessible, remote care relies heavily on physical infrastructure that is both robust and portable. Consequently, this thesis proposes the development of the specialized EEG signal acquisition system (MONEEE) as the hardware enabler for ACEMATE. This system is designed to provide the low-latency marker integration and signal fidelity necessary to power the broader ACEMATE ecosystem, democratizing access to objective mental health services for children.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=1\textwidth]{Cap_1/Figures/acemate.png}
+    \caption{ACEMATE project overview.}
+    \label{fig:acemate}
+\end{figure}
 
 
