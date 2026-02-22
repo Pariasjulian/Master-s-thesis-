@@ -165,6 +165,7 @@
 %\newcommand{\resgrouptwo}{}
 \newcommand{\researchtopic}{}
 \newcommand{\thesisname}{}
+\newcommand{\thesisnamespanish}{}
 \newcommand{\director}{}
 \newcommand{\codirector}{}
 \newcommand{\issuedate}{}
@@ -179,10 +180,12 @@
 %Información de la tesis
 %Diligenciar aquí los datos para su carga automática donde se requiera en el documento
 \renewcommand{\studentname}{Julian Andres Salazar Parias}
-\renewcommand{\thesisname}{Low-Latency EEG Marker Integration in Serious Games for Neurocognitive Assessment}
+\renewcommand{\thesisname}{An Embedded Framework for EEG-Based Neurophysiological Data Acquisition to Support ADHD Monitoring}
+\renewcommand{\thesisnamespanish}{Marco Integrado para la Adquisición de Datos Neurofisiológicos Basados en EEG para Apoyar la Monitorización del TDAH}
 \renewcommand{\issuedate}{2025}
 \renewcommand{\submissiondate}{2025}
-\renewcommand{\director}{MSc Bernardo Andrés Cardona Noreña}
+\renewcommand{\director}{M.Sc. Bernardo Andrés Cardona Noreña}
+\renewcommand{\codirector}{Ph.D. Andrés Marino Álvarez Meza}
 \renewcommand{\academictitle}{Maestría en ingeniería - Automatización Industrial}
 \renewcommand{\resgroupone}{Grupo de Control y Procesamiento Digital de Señales (GCPDS) }
 %\renewcommand{\resgrouptwo}{}
@@ -420,10 +423,10 @@ myedge/.style={->, -{Latex[#1]}}
     \epsfig{file=Figures/EscudoUN2016,scale=1}%
   \end{figure}
   \vspace{2.5cm}
-  \textbf{\Huge \thesisname} \\
+  {\Huge \bfseries \thesisname \par}
   \vspace{2.5cm}
-  \textbf{\Large \studentname} \\
-  \vspace{5.0cm}
+  {\Large \bfseries \studentname \par}
+  \vspace{4.0cm}
   \small Universidad Nacional de Colombia \\
   \faculty \\
   \department \\
@@ -431,25 +434,25 @@ myedge/.style={->, -{Latex[#1]}}
   \issuedate
   \newpage
   \thispagestyle{empty}
-  \vspace{2.5cm}
-  \textbf{\Huge \thesisname} \\
-  \vspace{2.5cm}
-  \textbf{\Large \studentname} \\
-  \vspace{2.5cm}
+  \vspace{2.0cm}
+  {\Huge \bfseries \thesisnamespanish \par}
+  \vspace{2.0cm}
+  {\Large \bfseries \studentname \par}
+  \vspace{2.0cm}
   \small Tesis presentada como requisito parcial para optar por el título de: \\
   {\bfseries \academictitle}\\
-  \vspace{2.5cm}
+  \vspace{1.8cm}
   Director(a): \\
   \director \\
-  % Codirector(a): \\
-  % \codirector \\
-  \vspace{2.5cm}
+  Codirector(a): \\
+  \codirector \\
+  \vspace{1.8cm}
   Línea de investigación: \\
   \researchtopic\\
   Grupo de investigación: \\
   \resgroupone \\
   %\resgrouptwo \\
-  \vspace{2.0cm}
+  \vspace{1.8cm}
   Universidad Nacional de Colombia \\
   \faculty \\
   \department \\
