@@ -1,11 +1,11 @@
 \section{Objectives}
 
 \subsection{General Objective}
-To design and implement an EEG signal acquisition architecture optimized for applications in educational and clinical settings, focused on latency reduction and precise event synchronization, to improve the objective assessment of cognitive and emotional patterns in children with ADHD.
+To design, implement, and validate a hardware-synchronized embedded EEG acquisition architecture capable of mitigating mixed-signal interference and bounding non-deterministic communication latency to ensure the clinical validity of continuous neurocognitive assessments in pediatric ADHD.
 
 \subsection{Specific Objectives}
 \begin{enumerate}
-    \item Analyze the technical limitations of current EEG acquisition systems, including transmission latencies and low channel density.
-    \item Develop low-latency algorithms and temporal synchronization strategies to ensure precise alignment between serious game stimuli and EEG responses.
-    \item Evaluate the proposed architecture in clinical and educational settings, verifying its effectiveness in the diagnosis and treatment of ADHD.
+    \item To overcome physical deployment barriers and maximize signal efficiency by characterizing the user-experience of a new EEG cap design and systematically measuring electrode-skin impedance to optimize the initial analog interface.
+    \item To design and construct a robust EEG acquisition hardware architecture based on industry standards, quantifying its instrumental noise floor and monitoring computational resource consumption (CPU and RAM) to ensure stability during high-frequency data logging.
+    \item To guarantee deterministic event alignment by implementing direct hardware-level synchronization, executing rigorous end-to-end latency, jitter, and multimodal stress tests alongside physiological alpha-blocking validations to prove the elimination of non-deterministic temporal errors.
 \end{enumerate}
