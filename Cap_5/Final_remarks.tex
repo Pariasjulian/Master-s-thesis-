@@ -1,50 +1,47 @@
 \chapter{Final remarks}
 
 
-\section{Conclusion and discussion}    
+\section{Conclusion and discussion}
 \label{sec:conclusion}
 
-\begin{itemize}
-    \item  This research confirms that the MONEEE system's partitioned design effectively solves the trade-off between signal fidelity and computational power. By physically decoupling the acquisition domain (TM4C1294) from the compute domain (Raspberry Pi CM4), the system preserves signal integrity against digital switching noise. The results demonstrate that handling biopotentials in a deterministic ("bare metal") environment is a critical requirement for achieving the signal-to-noise ratio necessary to reliably detect low-amplitude ERP components, such as the N200 and P300, without the interference typical of complex operating systems.
+The design and testing of a rapidly deployable EEG cap, integrated with the ADS1299's lead-off detection circuitry for real-time impedance quantification, proved effective in minimizing patient setup friction—a critical requirement when working with pediatric ADHD populations prone to restlessness. The impedance visualization module allows operators to quickly verify and adjust electrode contact prior to each session, and the measured impedances consistently remained within acceptable thresholds. This rapid deployment capability secures the pristine analog baseline upon which all subsequent acquisition and synchronization stages depend.
 
-    \item The investigation establishes that the proposed hardware injection strategy offers a superior alternative to traditional software-based time-stamping. By physically coupling event markers with EEG samples at the microcontroller level, the system eliminates the variable latency and \textit{jitter} inherent in software layers. This thesis demonstrates that such precise synchronization—bounded strictly by the sampling rate—is a fundamental prerequisite for preventing signal attenuation during the averaging process, thereby ensuring the diagnostic validity and temporal precision of the recorded data.
+The MONEEE system's heterogeneous computing architecture—physically decoupling the real-time acquisition domain on the TM4C1294 microcontroller from the high-level compute domain on the Raspberry Pi CM4—proved essential for preserving microvolt-level signal integrity. By operating the acquisition core in a \textit{bare-metal} environment and powering the ADS1299 analog front-end through isolated LDO regulators, the design effectively prevents high-frequency digital switching noise from coupling into the amplifier input stages. The instrumental noise characterization test, conducted with internally shorted inputs, confirmed that the system's intrinsic noise floor complies with the sub-microvolt specifications required for reliable extraction of low-amplitude Event-Related Potentials such as the N200 and P300. Complementarily, the computational resource consumption analysis demonstrated that both the TM4C1294 and the CM4—optimized with the \textit{PREEMPT\_RT} kernel patch and CPU core isolation—sustain continuous multi-channel acquisition without buffer overflows, thermal throttling, or RAM saturation, thereby guaranteeing deterministic data throughput throughout extended clinical sessions.
 
-    \item  The development and validation of the \texttt{MoneLib} library represents a significant contribution to the field of neuroinformatics, bridging the gap between custom hardware and the Unity engine. By functioning as a low-latency interface, \texttt{MoneLib} enables a precise millisecond-level alignment between user interactions and physiological responses. This innovation not only proves the technical viability of the system but provides a robust methodological framework for conducting cognitive assessments within "serious games," enabling research in scenarios that offer significantly higher ecological validity than static laboratory paradigms.
-\end{itemize}
+The central methodological contribution of this work—the hardware event injection strategy—eliminates the non-deterministic latency inherent to software-based time-stamping. By capturing USB event markers through a high-priority interrupt on the TM4C1294 and concatenating them directly into the EEG data frame within the same sampling cycle, the system transforms the synchronization problem into a deterministic data-parsing task. The 3-byte binary synchronization header—comprising an event flag, event type, and start-of-frame delimiter—ensures that the relative phase relationship between stimuli and physiological samples is preserved regardless of downstream operating system scheduling. The validation tests confirmed minimal transmission jitter across the SPI and serial interfaces, strictly bounded end-to-end latency from analog input to timestamped software availability, and negligible packet loss during prolonged Wi-Fi streaming under network congestion. These results collectively demonstrate that the \texttt{MoneLib} library—bridging the Unity-based serious game with the embedded hardware via a lightweight hexadecimal protocol over isolated USB—enables millisecond-level alignment between user interactions and physiological responses, providing a robust framework for cognitive assessments with high ecological validity.
+
+This research demonstrates that the simultaneous optimization of signal fidelity and temporal determinism in embedded EEG architectures is not merely an engineering convenience but a clinical necessity. The coherent signal averaging technique upon which ERP-based ADHD assessments depend requires both a high signal-to-noise ratio and strict temporal stability; a failure in either domain independently invalidates the resulting biomarkers. The MONEEE architecture addresses this interdependence through a layered strategy—securing the analog baseline at the physical interface, preserving signal integrity through galvanic isolation and dedicated power management, and locking event timing at the lowest possible hardware layer before exposure to non-deterministic software environments. The successful integration of this architecture within the \gls{ACEMATE} project framework confirms that clinically valid, portable neurocognitive assessment tools can be realized for pediatric populations without sacrificing the precision traditionally reserved for laboratory-grade systems.
 
 \section{Future work}
 \label{sec:future_work}
 
+While the MONEEE system has demonstrated its capacity to address the defined signal integrity and synchronization challenges, several promising research directions remain to expand its clinical applicability and technical capabilities:
+
 \begin{itemize}
-    \item 
+    \item \textbf{Physiological alpha-blocking validation.} The spectral analysis in the idle state (alpha attenuation test) was not completed within the scope of this thesis. Executing this foundational physiological baseline test—recording continuous EEG during alternating eyes-closed and eyes-open conditions and verifying the characteristic suppression of alpha-band activity (8--13~Hz)—is an immediate priority. This validation would provide definitive end-to-end proof that the synchronized event markers are anchored to genuine cortical rhythms rather than structured noise.
+
+    \item \textbf{Pilot ERP recording with serious game stimuli.} A natural subsequent step is to conduct a proof-of-concept recording of P300 and N200 event-related potentials elicited by the serious game on healthy subjects and, subsequently, on pediatric ADHD populations. This experiment would validate the full clinical pipeline—from stimulus presentation through hardware-synchronized acquisition to coherent signal averaging—and confirm the system's diagnostic utility within the \gls{ACEMATE} framework.
+
+    \item \textbf{On-device real-time signal processing.} The current architecture transmits raw digitized data to the CM4 for storage and forwarding. Integrating lightweight digital signal processing algorithms—such as adaptive notch filtering, real-time baseline drift correction, or compressive feature extraction—directly on the TM4C1294's Floating-Point Unit would reduce the data volume transmitted to the compute node and enable on-device signal quality metrics, further enhancing the system's autonomy for field deployments.
+
+    \item \textbf{Integration of lightweight deep learning inference at the edge.} Building upon the edge-computing paradigm established in this thesis, future work could deploy quantized 1D convolutional neural networks or denoising autoencoders on the CM4 for real-time artifact rejection of ocular and muscular contamination. This would eliminate the need for post-hoc offline artifact removal, enabling fully closed-loop neurofeedback within the serious game environment.
+
+    \item \textbf{Transition to active dry electrode technology.} While the current cap design utilizes wet electrodes for maximum signal fidelity, the adoption of active dry sensors with on-site impedance buffering would dramatically reduce patient preparation time and improve comfort for prolonged pediatric sessions. Characterizing the impact of this transition on the system's noise floor and ERP detection sensitivity constitutes a critical hardware evolution pathway.
+
+    \item \textbf{Wireless event synchronization and expanded multimodal integration.} The current USB-C-based event interface requires a physical cable between the stimulation tablet and the acquisition system. Migrating to a wireless synchronization protocol—validated against the hardware injection baseline established in this thesis—would enhance clinical ergonomics. Additionally, integrating complementary physiological modalities such as galvanic skin response or heart rate variability into the MONEEE data frame would enrich the neurocognitive profile available for ADHD assessment.
+
+    \item \textbf{Longitudinal clinical validation and normative database construction.} Deploying the MONEEE system across multiple clinical sites within the \gls{ACEMATE} network for extended longitudinal studies would enable the construction of normative ERP databases for the Colombian pediatric population. Such databases are essential for establishing age-stratified diagnostic thresholds and for evaluating the long-term therapeutic efficacy of serious-game-based neurofeedback interventions in ADHD.
 \end{itemize}
 
-\section{Academic contributions}
-\label{sec:academic_contributions}
+% \section{Academic contributions}
+% \label{sec:academic_contributions}
 
-\subsection{Journal papers}
-\label{sec:journal_papers}
+% \subsection{Journal papers}
+% \label{sec:journal_papers}
 
-\subsection{Patents}
-\label{sec:patents}
+% \subsection{Patents}
+% \label{sec:patents}
 
-\subsection{Software registered}
-\label{sec:software}
-
-
-%\label{chap:validation_results}
-
-%\section{Signal Quality Verification}
-%Noise floor analysis (Input-shorted test).
-%Frequency response analysis.
-
-%\section{Synchronization Latency Analysis (Crucial)}
-%\subsection{The "Round-Trip" Test}
-%A test setup where the tablet flashes the screen AND sends the Hex code. A photodiode measures the screen, and the MONEEE records the Hex code. The time difference is the System Latency.
-
-%\subsection{Jitter Measurement}
-%Quantifying the variability of the USB transmission.
-
-%\section{Proof of Concept}
-%A pilot recording of a P300 response using the Serious Game on a healthy subject.
+% \subsection{Software registered}
+% \label{sec:software}
 

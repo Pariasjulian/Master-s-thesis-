@@ -17,19 +17,91 @@ The synchronization engine depends on the precise management of the \texttt{DRDY
     \label{fig:isr_flowchart}
 \end{figure}
 
-The sequence of operations within the Interrupt Service Routine (ISR) is critical for maintaining the system's phase coherence. Upon detection of the falling edge of the \texttt{DRDY} signal, the microcontroller activates the \textit{Chip Select} (\texttt{CS}) line of the SPI bus and initiates a Direct Memory Access (DMA) transfer. This mechanism allows for the automatic reading of 24 bytes of data (8 channels of 24 bits plus status bits) without CPU intervention, which is reserved for managing storage in a circular buffer and verifying event flags.
+The sequence of operations within the Interrupt Service Routine (ISR), as illustrated in Figure \ref{fig:isr_flowchart}, is critical for maintaining the system's phase coherence. Upon detection of the falling edge of the \texttt{DRDY} signal, the microcontroller activates the \textit{Chip Select} (\texttt{CS}) line of the SPI bus and initiates a Direct Memory Access (DMA) transfer. This mechanism allows for the automatic reading of 24 bytes of data (8 channels of 24 bits plus status bits) without CPU intervention, which is reserved for managing storage in a circular buffer and verifying event flags.
 
-\subsection{Hardware Event Injection Strategy}
-To resolve the problem of temporal desynchronization, the system design dispenses with PC or Raspberry Pi clocks for event \textit{timestamping}. Instead, a direct injection strategy into the data frame is implemented.
+\subsection{Hardware Event Injection Strategy (MCU-to-Aggregator Egress Protocol)}
+To resolve the problem of temporal desynchronization, the system design dispenses with PC or Raspberry Pi clocks for event \textit{timestamping}. Instead, a direct injection strategy into the data frame is implemented. This protocol governs the egress data flow from the microcontroller to the aggregation node.
 
 The operation of this mechanism is based on the immediate reception of commands. When the stimulation software (Game) generates a visual event, it transmits an 8-bit hexadecimal code (e.g., \texttt{0x0A}) via the USB-C interface to the TM4C. The arrival of this byte triggers a high-priority interrupt in the MCU, which immediately stores the value in a volatile register named \texttt{Current\_Event}. During the subsequent ADS1299 sampling cycle (which occurs within an interval of less than 4 ms), the ISR queries this register and concatenates the event code directly to the end of the EEG data packet in progress. In this way, the event marker and the physiological sample become physically linked within the same data structure before being transmitted to the Linux environment. This approach ensures that the relative \textit{jitter} between the stimulus and the biological response is virtually null, bounded only by the temporal resolution of the sampling period.
 
-\section{Integration Protocol with the Simulation Environment}
+To formalize this linkage between physiological data and event markers, the system employs a specific hexadecimal frame structure for serial transmission to the aggregation node, as visualized in Figure \ref{fig:moneee_frame_structure}. In this encoding scheme, the initial three bytes are strictly reserved for control data, thereby eliminating the need for post-hoc timestamp realignment. The first byte acts as a binary Event Flag ($B_{0}$), explicitly indicating the presence of a synchronization trigger with a value of \texttt{1} or a resting state with \texttt{0}. The second byte ($B_{1}$) designates the Event Type, carrying the specific code required to classify the nature of the stimulus (e.g., distinguishing between target and standard inputs, populated directly from the \texttt{Current\_Event} register). This metadata is immediately followed by the third byte ($B_{2}$), which serves as a static Start-of-Frame delimiter (\texttt{0xFE}) to identify the beginning of the physiological data payload. By packaging the event markers and the EEG signal within this same atomic transmission unit, the system transforms the synchronization problem into a data parsing task, ensuring that the relative phase relationship is preserved regardless of the jitter introduced by subsequent USB communication or operating system schedulers.
+
+\begin{figure}[ht]
+    \centering
+    % Define custom colors for clarity
+    \definecolor{moneeeSync}{RGB}{255, 100, 100} % Red-ish for sync events
+    \definecolor{moneeeSOF}{RGB}{255, 200, 0}   % Yellow-ish for Start of Frame
+    \definecolor{moneeeData}{RGB}{100, 200, 100} % Green-ish for payload
+
+    \begin{tikzpicture}[
+            font=\sffamily,
+            node distance = 0pt,
+            start chain = going right,
+            byte node/.style = {
+                    rectangle,
+                    draw=black!80,
+                    thick,
+                    minimum width=2.2cm,
+                    minimum height=1.2cm,
+                    outer sep=0pt,
+                    align=center,
+                    font=\ttfamily\bfseries
+                },
+            label node/.style = {
+                    font=\footnotesize\sffamily,
+                    align=center,
+                    below=0.3cm
+                }
+        ]
+
+        % --- Draw the Bytes ---
+        % Byte 0: Event Flag
+        \node [byte node, on chain, fill=moneeeSync!30] (b0) {0x01};
+        % Byte 1: Event Type
+        \node [byte node, on chain, fill=moneeeSync!30] (b1) {Type ID};
+        % Byte 2: SOF Delimiter
+        \node [byte node, on chain, fill=moneeeSOF!30] (b2) {0xFE};
+        % Byte 3: Data High
+        \node [byte node, on chain, fill=moneeeData!30, right=0.5cm of b2] (d1) {CH1 High};
+        % Byte 4: Data Low
+        \node [byte node, on chain, fill=moneeeData!30] (d2) {CH1 Low};
+        % Continuation dots
+        \node [on chain, minimum width=1.5cm, align=center, font=\huge] (dots) {...};
+        % Last Byte example
+        \node [byte node, on chain, fill=moneeeData!30] (dn) {CHN Low};
+
+
+        % --- Add Labels below the bytes ---
+        \node [label node, below=of b0] {Byte $B_0$\\Event Flag\\(Active=1)};
+        \node [label node, below=of b1] {Byte $B_1$\\Event Type\\(Payload)};
+        \node [label node, below=of b2] {Byte $B_2$\\Start of Frame\\(Fixed Header)};
+
+        % Group label for EEG data
+        \node [label node, below=of d1.south west] (dataLabelStart) {};
+        \node [label node, below=of dn.south east] (dataLabelEnd) {};
+        \draw [thick, decoration={brace, mirror, raise=0.3cm}, decorate] (d1.south west) -- (dn.south east) node [pos=0.5, below=0.6cm, font=\footnotesize\sffamily] {Physiological Data Payload (EEG Samples)};
+
+
+        % --- Grouping Backgrounds and Titles ---
+        \begin{scope}[on background layer]
+            % Sync Header Group
+            \node [draw=moneeeSync!80, thick, dashed, fit=(b0) (b2), inner ysep=15pt, inner xsep=5pt, rounded corners, label={[anchor=north, font=\footnotesize\bfseries, text=moneeeSync!80]north:Hardware Synchronization Header (3 Bytes)}] (syncHeader) {};
+        \end{scope}
+
+        % --- Transmission Flow Arrow ---
+        \draw [-{Latex[length=4mm, width=3mm]}, very thick, gray] ($(b0.west) + (-0.8, 1.5)$) -- node[above, font=\small\bfseries] {Transmission Direction (Serial Stream)} ($(dn.east) + (0.5, 1.5)$);
+
+    \end{tikzpicture}
+    \caption{Visual representation of the MONEEE serial data transmission frame. The initial three bytes ($B_0, B_1, B_2$) form a dedicated hardware synchronization prefix attached to every physiological sample, ensuring that event timing is locked to the data stream before transmission to the CM4.}
+    \label{fig:moneee_frame_structure}
+\end{figure}
+
+\section{Integration Protocol with the Simulation Environment (Tablet-to-MCU Ingress Protocol)}
 \label{sec:game_integration}
 
 Interaction with the serious game, developed in the Unity engine, is managed via a custom communication library that acts as an abstraction layer over the tablet's serial API. This library exposes high-level methods, such as \texttt{SendMarker(int code)}, which are invoked by the game logic at the exact instant of stimulus rendering.
 
-To guarantee the integrity of commands transmitted over the USB link and prevent the erroneous interpretation of electromagnetic noise as valid events, a robust binary protocol has been defined. The transmission structure consists of 3-byte frames, detailed in Table \ref{tab:protocol}.
+To guarantee the integrity of commands transmitted over the USB link and prevent the erroneous interpretation of electromagnetic noise as valid events, a robust binary communication protocol (Ingress Protocol) has been defined for the Stimulus-to-MCU link. The transmission structure consists of 3-byte frames, detailed in Table \ref{tab:protocol}, which is distinct from the 3-byte MCU-to-CM4 egress protocol described in Section \ref{sec:tm4c_firmware}.
 
 \begin{table}[ht]
     \centering
@@ -39,8 +111,8 @@ To guarantee the integrity of commands transmitted over the USB link and prevent
         \toprule
         \textbf{Byte 0 (Header)} & \textbf{Byte 1 (Payload)} & \textbf{Byte 2 (Footer)} \\
         \midrule
-        Start Marker & Event Code & Validation \\
-        \texttt{0xFF} & \texttt{0x00 - 0xFE} & \texttt{0xAA} \\
+        Start Marker             & Event Code                & Validation               \\
+        \texttt{0xFF}            & \texttt{0x00 - 0xFE}      & \texttt{0xAA}            \\
         \bottomrule
     \end{tabular}
 \end{table}
@@ -55,3 +127,51 @@ The Raspberry Pi Compute Module 4 plays the role of an aggregation node and data
 To minimize operating system-induced latency, the Linux kernel on the CM4 has been optimized using the \textit{PREEMPT\_RT} patch. This modification transforms Linux into a real-time operating system, allowing execution threads associated with hardware drivers (such as the UART receiver) to preempt standard user-space processes. Additionally, core isolation techniques are employed (\textit{CPU shielding} via the \texttt{isolcpus} parameter), dedicating specific processor cores exclusively to data ingestion and freeing them from non-critical interruptions such as Wi-Fi network management or the graphical interface.
 
 Finally, the application software on the CM4, developed in a hybrid Python/C++ environment, ingests the binary packets coming from the TM4C, extracts the injected event markers, and reformats the continuous stream to the Extensible Data Format (XDF) standard. This format, native to the \textit{Lab Streaming Layer} (LSL) middleware, allows multimodal time series to be encapsulated, facilitating the coexistence of EEG samples and discrete event markers in parallel streams with a unified time base, thus optimizing analytical post-processing.
+
+\section{System Integration and Performance Validation}
+\label{sec:system_validation}
+
+This section outlines the validation protocols designed to evaluate the computational performance, temporal accuracy, and overall systems integration of the MONEEE architecture. These tests specifically verify the efficacy of the deterministic firmware processes detailed in Section \ref{sec:tm4c_firmware} and the synchronization interfaces discussed in Section \ref{sec:game_integration}.
+
+\subsection{Computational Resource Consumption Analysis}
+Monitoring the computational resource consumption (CPU and RAM) is critical to ensure stability during high-frequency data logging. Because unoptimized continuous data logging demands substantial computational power and can rapidly induce I/O bottlenecks and RAM saturation, it is necessary to profile the operational envelope of both the TM4C1294 microcontroller and the Raspberry Pi CM4. This analysis quantifies CPU utilization, memory allocation, and interrupt latency limits under continuous acquisition at the maximum sampling rate. The objective is to verify that the real-time \textit{bare-metal} core maintains deterministic execution without buffer overflows and that the CM4 reliably sustains the Lab Streaming Layer (LSL) backend, benefiting from the \textit{PREEMPT\_RT} kernel patch optimizations without thermal throttling or resource exhaustion. The results of this consumption profiling are presented in Figure \ref{fig:usage_plot}.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.8\textwidth]{Cap_3/Figure/usage_plot.pdf}
+    \caption{Measurements of CPU and RAM usage during continuous EEG signal acquisition.}
+    \label{fig:usage_plot}
+\end{figure}
+
+\subsection{Channel Integrity Verification Using Jitter and Latency}
+To eliminate unpredictable communication jitter that skews the temporal alignment between stimulus and response, the deterministic nature of the data flow from the ADC to the processing unit is assessed by characterizing transmission jitter and internal latency. This test monitors the variability in the temporal spacing between consecutive data packets across the SPI and serial interfaces. By quantifying the time deviation (jitter) in the \texttt{DRDY} interrupt handling and the subsequent inter-core communication, the system guarantees that the strict temporal structure of the digitized EEG stream is preserved prior to network transmission, as evidenced by the jitter measurements in Figure \ref{fig:jitter_plot}.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.8\textwidth]{Cap_4/Figure/jitter_plot.pdf}
+    \caption{Jitter measurements during EEG signal acquisition and transmission.}
+    \label{fig:jitter_plot}
+\end{figure}
+
+\subsection{End-to-End Latency Quantification}
+To ensure precise temporal synchronization, the overall delay from biological phenomenon to software availability must be strictly bounded. This end-to-end latency test measures the absolute time elapsed between the generation of an analog test signal at the electrode inputs and the corresponding timestamped arrival of that signal peak in the host computer's LSL stream. Furthermore, the synchronization accuracy of the hardware event injection strategy via the USB interface is evaluated against the acquired EEG data to determine the maximum temporal misalignment between the Unity stimulation markers and the physiological recording, proving the elimination of non-deterministic temporal errors. The resulting end-to-end latency distribution is depicted in Figure \ref{fig:latency_plot}.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.8\textwidth]{Cap_4/Figure/latency_plot.pdf}
+    \caption{End-to-end latency measurements during event synchronization and EEG acquisition.}
+    \label{fig:latency_plot}
+\end{figure}
+
+\subsection{Multimodal Transmission Stress Test (Jitter and Packet Loss)}
+To validate the reliability of the wireless communication link and mitigate the risk of cumulative temporal drift in extended sessions, the system is subjected to a multimodal transmission stress test. Standard pediatric ADHD evaluations demand sustained, uninterrupted engagement; thus, the Raspberry Pi CM4 continuously streams multi-channel EEG data over the Wi-Fi network interface under varying levels of network congestion and prolonged operational durations. The test quantifies packet loss rates and connection dropouts, verifying the robustness of the networking stack and the 3-byte binary encapsulation protocol established in Section \ref{sec:game_integration} in maintaining an uninterrupted continuous data flow. The observed packet loss over time is illustrated in Figure \ref{fig:packet_loss_plot}.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.8\textwidth]{Cap_4/Figure/packet_loss_plot.pdf}
+    \caption{Packet loss rates observed during the multimodal transmission stress test.}
+    \label{fig:packet_loss_plot}
+\end{figure}
+
+% \subsection{Spectral Analysis in the Idle State (Alpha Blocking)}
+% The ultimate validation of the MONEEE system's acquisition fidelity and full-stack integration is demonstrated through a foundational physiological baseline test: Alpha Blocking (or Alpha Attenuation). This directly addresses the requirement to verify the fundamental ability to resolve basic frequency changes, ensuring that the synchronized event markers are anchored to genuine neural activity rather than structured noise. Continuous EEG is recorded from a human subject in a relaxed, awake state, alternating between "eyes-closed" and "eyes-open" conditions. A spectral analysis is subsequently performed to identify the prominent alpha band activity (8--13 Hz) over the occipital regions during the eyes-closed state, and its characteristic suppression upon visual stimulation (eyes-open). The successful resolution of this phenomenon confirms the system's end-to-end capability to capture, synchronize, and transmit true cortical rhythms with high bio-fidelity.

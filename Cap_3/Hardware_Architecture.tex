@@ -14,68 +14,72 @@ The device operates under an \textit{edge-computing} paradigm, dedicating its re
 
 As illustrated in Figure \ref{fig:block_diagram}, the hardware is structured into three differentiated functional zones: the Analog Front-End (AFE), the Real-Time Core, and the Compute Core. This segmentation is not merely logical but physical, employing isolation barriers to protect the integrity of physiological measurements.
 
-\begin{figure}[ht]
+\begin{figure}[htbp]
     \centering
-    \includegraphics[width=1.0\textwidth]{Cap_3/Figure/DBP.png}
+    \includegraphics[width=0.85\textwidth]{Cap_3/Figure/DBP.png}
     \caption{Block diagram of the MONEEE architecture, evidencing the segregation between the deterministic acquisition (MCU) and high-level processing (MPU) domains.}
     \label{fig:block_diagram}
 \end{figure}
 
-For this project, we have established the MONEEE system as a robust electronic design aligned with acquisition systems in its segment. The designs presented in Figures \ref{fig:MODULOEEG}, \ref{fig:FILTROSACOPLE}, \ref{fig:MODULOCOMUNICACION}, \ref{fig:Led_Head}, \ref{fig:Board_ADS}, and \ref{fig:CPU} illustrate our proposal for an EEG signal acquisition board, conceived to significantly improve the capacity of real-time BCI systems, overcoming current challenges and contributing to the advancement of technology in this field.
+For this project, we have established the MONEEE system as a robust electronic design aligned with acquisition systems in its segment. The designs presented in Figures \ref{fig:modulo_eeg}, \ref{fig:filtros_acople}, \ref{fig:modulo_comunicacion}, \ref{fig:led_head}, \ref{fig:board_ads}, and \ref{fig:cpu} illustrate our proposal for an EEG signal acquisition board, conceived to significantly improve the capacity of real-time BCI systems, overcoming current challenges and contributing to the advancement of technology in this field.
+
+\subsection{Electronic Design}
+\label{subsec:electronic_design}
+
+The following schematic designs constitute the complete electronic architecture of the MONEEE system, divided by their primary functions.
 
 %=======================================
 
-
-\begin{figure}[H]
+\begin{figure}[htbp]
     \centering
-    \includegraphics[width=0.9\linewidth]{Cap_3/Figure/ModuloEEG.png}
+    \includegraphics[width=0.65\linewidth]{Cap_3/Figure/ModuloEEG.png}
     \caption{Schematic design for the module responsible for acquiring EEG signals.}
-    \label{fig:MODULOEEG}
+    \label{fig:modulo_eeg}
 \end{figure}
 
 %====================================
 
-\begin{figure}[H]
+\begin{figure}[htbp]
     \centering
-    \includegraphics[width=0.9\linewidth]{Cap_3/Figure/Filtros electrodos.png}
+    \includegraphics[width=0.65\linewidth]{Cap_3/Figure/Filtros electrodos.png}
     \caption{Schematic design of coupling filters.}
-    \label{fig:FILTROSACOPLE}
+    \label{fig:filtros_acople}
 \end{figure}
 
 %====================================
 
-\begin{figure}[H]
+\begin{figure}[htbp]
     \centering
-    \includegraphics[width=0.9\linewidth]{Cap_3/Figure/Modulo comunicacion.png}
+    \includegraphics[width=0.65\linewidth]{Cap_3/Figure/Modulo comunicacion.png}
     \caption{Schematic design of the module responsible for communicating the collected data to another device or to the cloud.}
-    \label{fig:MODULOCOMUNICACION}
+    \label{fig:modulo_comunicacion}
 \end{figure}
 
 %====================================
 
-\begin{figure}[H]
+\begin{figure}[htbp]
     \centering
-    \includegraphics[width=0.9\linewidth]{Cap_3/Figure/Led_head.png}
+    \includegraphics[width=0.65\linewidth]{Cap_3/Figure/Led_head.png}
     \caption{Module for impedance visualization of the electrodes.}
-    \label{fig:Led_Head}
+    \label{fig:led_head}
 \end{figure}
 
 %====================================
 
-\begin{figure}[H]
+\begin{figure}[htbp]
     \centering
-    \includegraphics[width=0.9\linewidth]{Cap_3/Figure/Board_ADS.png}
+    \includegraphics[width=0.65\linewidth]{Cap_3/Figure/Board_ADS.png}
     \caption{Connection between the different ADS1299 acquisition modules.}
-    \label{fig:Board_ADS}
+    \label{fig:board_ads}
 \end{figure}
 
 %====================================
 
-\begin{figure}[H]
+\begin{figure}[htbp]
     \centering
-    \includegraphics[width=0.9\linewidth]{Cap_3/Figure/MONEEE_CPU.png}
+    \includegraphics[width=0.65\linewidth]{Cap_3/Figure/MONEEE_CPU.png}
     \caption{Motherboard for microcontroller and microprocessor.}
-    \label{fig:CPU}
+    \label{fig:cpu}
 \end{figure}
 
 \section{Analog Front-End (AFE) and Biomedical Interface}
@@ -94,103 +98,140 @@ Finally, signal integrity is ensured through rigorous power management. The AFE 
 
 The digital architecture implements a shared responsibility model, distributing the computational load between a real-time microcontroller and an application microprocessor.
 
-The Real-Time Unit, based on the Texas Instruments TM4C1294 (ARM Cortex-M4F), acts as the acquisition system master. Operating on \textit{bare metal} or a lightweight real-time operating system, the TM4C guarantees deterministic behavior. Its primary function is to service the \texttt{DRDY} (Data Ready) hardware interrupt from the ADC immediately, ensuring lossless sample capture. Additionally, its Floating Point Unit (FPU) facilitates the application of in-situ digital pre-processing, such as notch filtering or scaling, without compromising interrupt service times. It is at this stage that the hardware \textit{timestamp} is assigned, achieving microsecond precision.
+The Real-Time Unit, driven by a Texas Instruments TM4C1294 (ARM Cortex-M4F), serves as the acquisition system master. Operating in a \textit{bare-metal} environment or under a lightweight real-time operating system, the TM4C ensures deterministic performance. Its primary role is to immediately service the \texttt{DRDY} (Data Ready) hardware interrupt generated by the ADC, guaranteeing lossless sample capture. Moreover, the integration of a Floating-Point Unit (FPU) allows for the application of in-situ digital pre-processing—such as notch filtering or scaling—without impacting interrupt service latency. At this critical juncture, each sample is assigned a hardware \textit{timestamp}, achieving microsecond-level temporal precision.
 
-Subsequently, data is transferred to the Compute Unit, constituted by a Raspberry Pi Compute Module 4 (CM4). This module runs a full operating system (Linux) and assumes high-level tasks: mass storage management, execution of the \textit{Lab Streaming Layer} (LSL) gateway, and telemetric transmission via Wi-Fi. The CM4 processes the continuous stream coming from the microcontroller, packaging it into standardized formats for consumption by the serious game software.
+Data is subsequently routed to the Compute Unit, implemented via a Raspberry Pi Compute Module 4 (CM4). Executing a full Linux operating system, this module is tasked with higher-level organizational roles: mass storage management, deployment of the \textit{Lab Streaming Layer} (LSL) gateway, and telemetric transmission over Wi-Fi. The CM4 aggregates the continuous data stream transmitted by the microcontroller and packages it into standardized structures suitable for consumption by the interactive game software.
 
-Communication between both cores is established via a high-speed serial interface (UART $>921600$ baud or SPI). To guarantee patient safety and signal integrity, this digital link includes galvanic isolation (utilizing digital isolators such as the ISO77xx series). This prevents the formation of ground loops between the floating acquisition stage (battery) and any peripheral connected to the electrical grid. The communication protocol employs lightweight binary frames encapsulating the 24-bit data along with their timestamps, protected by a Cyclic Redundancy Check (CRC) to verify transmission integrity.
+Communication between the real-time and compute cores depends on a high-speed serial interface (UART operating at $>921600$ baud or SPI). To guarantee patient safety and preserve signal integrity, this digital link utilizes galvanic isolation (e.g., standard digital isolators like the ISO77xx series). This configuration prevents the formation of ground loops between the battery-powered floating acquisition stage and any peripheral connected to the electrical grid. The communication protocol relies on lightweight binary frames that encapsulate the 24-bit data alongside their corresponding timestamps; these frames are authenticated by a Cyclic Redundancy Check (CRC) to verify transmission integrity.
 
 
 \section{Event Synchronization Interface (USB-C)}
 \label{sec:event_interface}
 
-Synchronization with the stimulation platform (tablet) is physically performed through a USB Type-C port. This port, managed by the system's USB controller, allows for the reception of "event markers" generated by the game software at the precise instant of the stimulus. Given that the connection of commercial devices introduces significant electrical noise—a product of the tablet's internal DC-DC converters—the MONEEE system design incorporates total isolation of the USB bus. The data lines ($D+/D-$) traverse a specialized isolation integrated circuit (e.g., ADuM3160), effectively breaking galvanic continuity.
+Synchronization with the stimulation platform (e.g., a tablet) is physically facilitated by a USB Type-C port. Managed by the system's USB controller, this interface enables the reception of "event markers" generated by the game software at the precise instance of stimulus presentation. Because standard commercial devices introduce considerable electrical noise—primarily due to internal DC-DC converters—the MONEEE framework employs total isolation of the USB bus. The differential data lines ($D+/D-$) are routed through a specialized isolation integrated circuit (e.g., the ADuM3160), actively eliminating galvanic continuity.
 
-To manage the transmission of these synchronization markers from the software side, the system utilizes \texttt{MoneLib}, a specialized library designed to bridge the Unity-based game environment with the embedded hardware. This library operates as a native Android plugin (\texttt{.aar}), enabling the game engine to communicate directly with the USB Host peripheral of the tablet. The software architecture requires an Android device running version 12 (Snow Cone) or higher with USB-C Host support to properly initialize the communication driver.
+To handle the transmission of these synchronization markers from the software side, the system deploys \texttt{MoneLib}, a custom library that bridges the Unity-based simulation environment with the embedded hardware. Compiling as a native Android plugin (\texttt{.aar}), this library empowers the game engine to communicate directly with the USB Host subsystem of the tablet. The associated software architecture strictly mandates an Android device running version 12 (Snow Cone) or later with robust USB-C Host support in order to initialize the communication driver properly.
 
-The communication protocol is optimized for low latency, encoding game events—such as player interactions or system states—into lightweight hexadecimal values sent via USB. For instance, a player marking an "O" transmits the hexadecimal code \texttt{0x00}, while marking an "X" sends \texttt{0x01}, and a system restart triggers \texttt{0xFF}. To ensure signal integrity and prevent saturation of the USB channel, the protocol enforces a minimum safety interval of 1 millisecond between consecutive event transmissions.
+The underlying communication protocol is streamlined for low latency by encoding game events—such as player selections or application states—into lightweight hexadecimal values transmitted over USB. For example, marking an "O" transmits \texttt{0x00}, asserting an "X" transmits \texttt{0x01}, and initiating a system restart triggers \texttt{0xFF}. To preserve signal integrity and preclude the saturation of the USB channel, the protocol enforces a mandatory safety interval of exactly one millisecond between consecutive event transmissions.
 
-This integration allows the "Serious Game" to act as a precise stimulation trigger. When a user interacts with the game (e.g., touching a cell), the \texttt{MoneLibrary.SendUsbData} function is called immediately, dispatching the corresponding integer value to the microcontroller. This event is then captured by the embedded system's USB device peripheral and timestamped, ensuring that the cognitive task (the game) and the physiological recording (the EEG) remain temporally aligned for valid post-hoc analysis.
+Through this systemic interface, the "Serious Game" acts as a precision stimulation trigger. Whenever a user interacts with the application, the \texttt{MoneLibrary.SendUsbData} routine is immediately invoked, securely dispatching the corresponding integer to the downstream microcontroller. The incoming hardware event is subsequently captured and precisely timestamped by the embedded USB peripheral, ensuring that the subjective cognitive task tightly correlates with the objective physiological recording, thus enabling robust post-hoc analysis.
 
-\begin{figure}[ht]
+\begin{figure}[H]
     \centering
     \begin{tikzpicture}[
-        node distance=3.8cm, % Increased distance to prevent vertical overlapping
-        auto,
-        block/.style={
-            rectangle, 
-            draw=black, 
-            thick, 
-            fill=blue!5, 
-            text width=16em, % Widened to fit "Hardware Abstraction Layer" on one line
-            align=center, 
-            rounded corners, 
-            minimum height=4em
-        },
-        cloud/.style={
-            draw=black, 
-            thick, 
-            ellipse, 
-            fill=green!5, 
-            minimum height=3em,
-            text width=12em,
-            align=center
-        },
-        arrow/.style={
-            thick, 
-            ->, 
-            >=stealth
-        }
-    ]
+            node distance=3.8cm, % Increased distance to prevent vertical overlapping
+            auto,
+            block/.style={
+                    rectangle,
+                    draw=black,
+                    thick,
+                    fill=blue!5,
+                    text width=16em, % Widened to fit "Hardware Abstraction Layer" on one line
+                    align=center,
+                    rounded corners,
+                    minimum height=4em
+                },
+            cloud/.style={
+                    draw=black,
+                    thick,
+                    ellipse,
+                    fill=green!5,
+                    minimum height=3em,
+                    text width=12em,
+                    align=center
+                },
+            arrow/.style={
+                    thick,
+                    ->,
+                    >=stealth
+                }
+        ]
 
-    % Nodes
-    \node [cloud] (user) {User Interaction \\ (Touch Event)};
-    
-    \node [block, below of=user, node distance=3cm] (unity) {
-        \textbf{Unity Game Engine} \\ 
-        \textit{C\# Script Layer} \\
-        \texttt{OnCellClick()}
-    };
-    
-    \node [block, below of=unity] (monelib) {
-        \textbf{MoneLib Middleware} \\ 
-        \textit{Android Native Plugin (.aar)} \\
-        \texttt{SendUsbData(sbyte)}
-    };
-    
-    \node [block, below of=monelib] (usb) {
-        \textbf{Android USB Host} \\ 
-        \textit{Hardware Abstraction Layer} \\
-        (USB-C Controller)
-    };
-    
-    \node [block, below of=usb, fill=orange!10, dashed] (mcu) {
-        \textbf{MONEEE MCU} \\ 
-        \textit{External Embedded System} \\
-        (Timestamp Generation)
-    };
+        % Nodes
+        \node [cloud] (user) {User Interaction \\ (Touch Event)};
 
-    % Edges and Labels (using xshift to separate left/right labels)
-    \draw [arrow] (user) -- node {Trigger} (unity);
-    
-    \draw [arrow] (unity) -- node[right, xshift=0.2cm] {Call Library} node[left, xshift=-0.2cm] {\texttt{0x00} / \texttt{0x01}} (monelib);
-    
-    \draw [arrow] (monelib) -- node {JNI Bridge} (usb);
-    
-    \draw [arrow] (usb) -- node[right, xshift=0.2cm] {Physical Trans.} node[left, xshift=-0.2cm] {USB D+/D-} (mcu);
+        \node [block, below of=user, node distance=3cm] (unity) {
+            \textbf{Unity Game Engine} \\
+            \textit{C\# Script Layer} \\
+            \texttt{OnCellClick()}
+        };
 
-    % Protocol Legend Box
-    \node [draw=black, thin, align=left, right of=monelib, node distance=7.5cm, text width=4.5cm] (legend) {
-        \textbf{Protocol Map:} \\
-        \texttt{0x00}: Mark 'O' \\
-        \texttt{0x01}: Mark 'X' \\
-        \texttt{0xFF}: Restart \\
-        \textit{Interval:} $>1$ms
-    };
-    
-    \draw [dashed, gray] (monelib) -- (legend);
+        \node [block, below of=unity] (monelib) {
+            \textbf{MoneLib Middleware} \\
+            \textit{Android Native Plugin (.aar)} \\
+            \texttt{SendUsbData(sbyte)}
+        };
+
+        \node [block, below of=monelib] (usb) {
+            \textbf{Android USB Host} \\
+            \textit{Hardware Abstraction Layer} \\
+            (USB-C Controller)
+        };
+
+        \node [block, below of=usb, fill=orange!10, dashed] (mcu) {
+            \textbf{MONEEE MCU} \\
+            \textit{External Embedded System} \\
+            (Timestamp Generation)
+        };
+
+        % Edges and Labels (using xshift to separate left/right labels)
+        \draw [arrow] (user) -- node {Trigger} (unity);
+
+        \draw [arrow] (unity) -- node[right, xshift=0.2cm] {Call Library} node[left, xshift=-0.2cm] {\texttt{0x00} / \texttt{0x01}} (monelib);
+
+        \draw [arrow] (monelib) -- node {JNI Bridge} (usb);
+
+        \draw [arrow] (usb) -- node[right, xshift=0.2cm] {Physical Trans.} node[left, xshift=-0.2cm] {USB D+/D-} (mcu);
+
+        % Protocol Legend Box
+        \node [draw=black, thin, align=left, right of=monelib, node distance=7.5cm, text width=4.5cm] (legend) {
+            \textbf{Protocol Map:} \\
+            \texttt{0x00}: Mark 'O' \\
+            \texttt{0x01}: Mark 'X' \\
+            \texttt{0xFF}: Restart \\
+            \textit{Interval:} $>1$ms
+        };
+
+        \draw [dashed, gray] (monelib) -- (legend);
 
     \end{tikzpicture}
     \caption{Data flow diagram of the Event Synchronization Interface. The high-level interaction within Unity is transduced into a hexadecimal marker by the MoneLib middleware and transmitted via the USB isolation barrier to the MONEEE acquisition core.}
     \label{fig:usb_sync_flow}
+\end{figure}
+
+\subsection{Desktop Application: MONEEE Visualizer}
+\label{subsec:moneee_visualizer}
+
+To complement the embedded hardware architecture and provide a comprehensive interface for data monitoring, a dedicated EEG signal analytical suite known as the MONEEE Visualizer was developed. This application facilitates the real-time observation and analysis of the acquired electroencephalographic data streams. By employing this tool, researchers can actively monitor signal quality, verify electrode contacts, and validate overall system performance iteratively during experimental paradigms. The graphical user interface of the MONEEE visualizer is documented in Figure \ref{fig:moneee_visualizer}.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{Cap_3/Figure/MONEEE_visualizer.png}
+    \caption{Graphical user interface of the MONEEE visualizer.}
+    \label{fig:moneee_visualizer}
+\end{figure}
+
+\section{Hardware Validation Strategy}
+\label{sec:hardware_validation}
+
+To rigorously demonstrate that the MONEEE system satisfies the stringent prerequisites for clinical-grade EEG acquisition, an initial sequence of hardware validation tests has been established. These structured protocols are purposefully designed to verify the fidelity of the physical interface and characterize the baseline analog performance of the system prior to any digital integration or filtering.
+
+\subsection{Use and Impedance Measurement Test of the New Cap}
+Maintaining optimal electrode-skin contact is fundamental for acquiring high-quality EEG recordings. This test systematically evaluates the usability and anatomical congruence of the custom EEG cap, verifying the application of consistent mechanical pressure across the scalp. Consequently, the electrical impedance of the electrode-skin interface is actively quantified utilizing the integrated lead-off detection circuitry of the ADS1299. This subsystem injects a calibrated AC or DC excitation current directly into the electrodes, allowing the MCU to derive and monitor contact quality in real time. The resulting impedance status is visually communicated to the operator via the dedicated impedance visualization module (Figure \ref{fig:led_head}), facilitating rapid, localized adjustments prior to commencing an experimental paradigm. A visual representation of this impedance checking sequence is provided in Figure \ref{fig:check_impedance}.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1.0\textwidth]{Cap_3/Figure/check_impedance.png}
+    \caption{Visualization of the impedance checking process.}
+    \label{fig:check_impedance}
+\end{figure}
+
+\subsection{Instrumental Noise Characterization (Noise Floor)}
+To validate the capacity of the Analog Front-End to accurately digitize microvolt-level physiological signals, an instrumental noise baseline characterization is performed. During this evaluation, the input channels of the ADS1299 are internally shorted to ground, effectively quantifying the intrinsic electronic noise generated by the internal amplifiers and the ADC, independently of ambient interference or skin impedance loading. The resulting input-referred noise floor is analyzed to ensure that both the peak-to-peak and root-mean-square (RMS) noise magnitudes comply with the sub-microvolt specifications necessary for the reliable extraction of subtle Event-Related Potentials (ERPs). It is important to note that the graph presented in Figure \ref{fig:noise_plot} exhibits elevated values because the test was conducted in an environment with high external noise caused by interference from adjacent equipment.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{Cap_3/Figure/noise_plot.pdf}
+    \caption{Instrumental noise characterization with the ADS1299 inputs internally short-circuited. The elevated values observed are indicative of interference generated by adjacent external equipment during the test.}
+    \label{fig:noise_plot}
 \end{figure}

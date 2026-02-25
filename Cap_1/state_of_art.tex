@@ -10,7 +10,7 @@ When high-gain, high-impedance analog sensing circuits are integrated into compa
 
 The foundational philosophy for optimizing the Signal-to-Noise Ratio (SNR) at the edge posits that interference must be aggressively rejected at the physical and electrical interface long before digitization occurs, thereby preventing downstream software bottlenecks \cite{xu2025analog}. Central to modern embedded Brain-Computer Interface (BCI) systems is the utilization of highly specialized, application-specific integrated circuits designed explicitly for biopotential measurement \cite{han2022wide}. These dedicated analog front-ends feature ultra-low input-referred noise floors and 24-bit delta-sigma analog-to-digital converters that provide expansive dynamic ranges \cite{chen2022124}. This wide dynamic range is highly critical for preventing amplifier saturation when baseline microvolt neural signals are superimposed with massive, millivolt-level motion artifacts during mobile use \cite{pochet2022pseudo}.
 
-\begin{table}[H]
+\begin{table}[htbp]
     \renewcommand{\arraystretch}{1.2}
     \renewcommand{\tabularxcolumn}[1]{m{#1}}
     \caption{Acquisition devices used for BCI. The table provides an overview of the different hardware devices, their specifications, and communication protocols.}
@@ -70,7 +70,7 @@ To mitigate this operational risk, modern Internet of Medical Things paradigms l
 
 Once a buffer is filled, this raw, precisely timed data is pushed asynchronously to a secondary, localized computing node responsible for heavy processing \cite{an2025multi}. To prevent this secondary node from thermal throttling during advanced deep learning inference, systems employ compressive offloading techniques, such as immediately extracting frequency-embedded power spectral density features or aggressively downsampling the raw stream to shrink the active memory footprint before classification \cite{akor2025attention}. Most importantly, utilizing sophisticated multi-threading environments ensures the absolute decoupling of the acquisition and processing pipelines; a high-priority hardware thread strictly handles continuous data ingestion, while lower-priority asynchronous threads manage the heavy algorithmic denoising \cite{van2026open}. This architectural isolation guarantees that sudden computational spikes in the processing layer can never stall the hardware layer, thereby guaranteeing the continuous, deterministic sampling rates required for flawless biomarker synchronization \cite{savas2025future}.
 
-\begin{figure}[H]
+\begin{figure}[htbp]
     \centering
     \resizebox{\textwidth}{!}{%
         \begin{forest}
@@ -177,7 +177,7 @@ Resolving mechanical, network, and computational timing issues is scientifically
 
 By sending a digital marker exactly when the subject is instructed to open their eyes, the system can objectively prove its end-to-end synchronization integrity by tracking the absolute latency between the digital marker and the sudden drop in neural power spectral density \cite{palumbo2024wearable}.  If the system can reliably capture this spontaneous frequency modulation, it validates the entire pipeline for the extraction of highly sensitive, time-locked ERPs associated with targeting stimuli or withholding a response \cite{wascher2023neuroergonomics}. The ability to perfectly fuse the digital interaction state with these precise analog signals confirms that the hardware isolation, noise reduction algorithms, and synchronization protocols have collectively succeeded in achieving the exact synchronization of biomarkers required for clinical analysis \cite{lin2023design}.
 
-\begin{figure}[H]
+\begin{figure}[htbp]
     \centering
     \resizebox{\textwidth}{!}{%
         \begin{forest}
