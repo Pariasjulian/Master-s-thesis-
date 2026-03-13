@@ -1,11 +1,11 @@
 \section{Objectives}
 
 \subsection{General Objective}
-To design, implement, and validate a hardware-synchronized embedded EEG acquisition architecture capable of mitigating mixed-signal interference and bounding non-deterministic communication latency to ensure the clinical validity of continuous neurocognitive assessments in pediatric ADHD.
+To develop an EEG-based data acquisition framework to mitigate mixed-signal interference and bound communication latency, ensuring support for neurocognitive assessments in ADHD monitoring.
 
 \subsection{Specific Objectives}
 \begin{enumerate}
-    \item To overcome physical deployment barriers and maximize signal efficiency by characterizing the user-experience of a new EEG cap design and systematically measuring electrode-skin impedance to optimize the initial analog interface.
-    \item To design and construct a robust EEG acquisition hardware architecture based on industry standards, quantifying its instrumental noise floor and monitoring computational resource consumption (CPU and RAM) to ensure stability during high-frequency data logging.
-    \item To guarantee deterministic event alignment by implementing direct hardware-level synchronization, executing rigorous end-to-end latency, jitter, and multimodal stress tests alongside physiological alpha-blocking validations to prove the elimination of non-deterministic temporal errors.
+    \item To design and construct an EEG cap that overcomes physical deployment barriers and maximizes signal efficiency through optimized electrode-scalp coupling and systematic impedance measurement.
+    \item To develop an embedded system-based EEG acquisition portable device that guarantees high-fidelity, low-noise signal processing for continuous, high-frequency data logging.
+    \item To implement a concurrent processing architecture that ensures precise temporal synchronization for ADHD monitoring by leveraging direct hardware-level event alignment, validated against end-to-end latency and jitter thresholds.
 \end{enumerate}
